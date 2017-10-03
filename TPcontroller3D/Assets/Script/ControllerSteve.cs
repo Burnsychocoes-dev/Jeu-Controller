@@ -55,7 +55,7 @@ public class ControllerSteve : MonoBehaviour {
 		transform.Translate(velocity * Time.deltaTime);
 	}
 
-	void HandleDeplacement()
+	private void HandleDeplacement()
 	{
 		float inputXStickGauche = Input.GetAxis("HorizontalStickGauche");
 		float inputYStickGauche = Input.GetAxis("VerticalStickGauche");
@@ -63,18 +63,18 @@ public class ControllerSteve : MonoBehaviour {
 		float inputYCroix = Input.GetAxis("VerticalCroix");
 		float inputX = Input.GetAxis("Horizontal");
 		float inputY = Input.GetAxis("Vertical");
-
+	
 		if (inputXStickGauche != 0 || inputYStickGauche != 0)
 			transform.Translate(new Vector2(inputXStickGauche * speed, inputYStickGauche * speed));
 
 		else if (inputXCroix != 0 || inputYCroix != 0)
 			transform.Translate(new Vector2(inputXCroix * speed, inputYCroix * speed));
-
+	
 		else if (inputX != 0 || inputY != 0)
 			transform.Translate(new Vector2(inputX * speed, inputY * speed));
 	}
 
-	void HandleChangeColor()
+	private void HandleChangeColor()
 	{
 		
 		if (Input.GetButton("buttonA"))
@@ -100,7 +100,7 @@ public class ControllerSteve : MonoBehaviour {
 
 	}
 
-	void HandleCollision()
+	private void HandleCollision()
 	{
 		//Chaque frame on initialise la boîte
 		box = new Rect(
@@ -141,7 +141,7 @@ public class ControllerSteve : MonoBehaviour {
 		}
 	}
 
-	void HandleGravity()
+	private void HandleGravity()
 	{
 		if (grounded)
 		{
