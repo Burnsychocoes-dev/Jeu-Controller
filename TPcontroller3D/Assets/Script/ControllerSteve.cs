@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Controller : MonoBehaviour {
+public class ControllerSteve : MonoBehaviour {
 	// Use this for initialization
 	public float speed = 0.1f;
 
