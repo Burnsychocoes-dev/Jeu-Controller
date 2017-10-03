@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Controller : MonoBehaviour {
 	// Use this for initialization
+	public float speed = 0.1f;
+
 	void Start () {
 		
 	}
@@ -12,12 +14,14 @@ public class Controller : MonoBehaviour {
 	void Update()
 	{
 		
-		
-		
-
 	}
 
-	private void FixedUpdate()
+	void OnCollisionEnter(Collision collision)
+	{
+		Destroy(collision.gameObject);
+	}
+
+		private void FixedUpdate()
 	{
 		float inputXStickGauche = Input.GetAxis("HorizontalStickGauche");
 		float inputYStickGauche = Input.GetAxis("VerticalStickGauche");
@@ -37,7 +41,7 @@ public class Controller : MonoBehaviour {
 
 	void HandleDeplacement(float inputX, float inputY)
 	{
-		transform.Translate(new Vector2(inputX,inputY));
+		transform.Translate(new Vector2(inputX*speed, inputY*speed));
 	}
 
 	void HandleChangeColor()
