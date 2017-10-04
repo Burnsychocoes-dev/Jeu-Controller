@@ -14,8 +14,10 @@ public class ControllerSteve : MonoBehaviour {
 	public float offset = 0.08f; 
 
 	// Variables physiques
-	public float gravity = 1f; 
+	public float gravity = 9.8f;
+	public float masse = 500f;
 	public float maxGravity = 3f;
+	public float maxVelocity = -20f;
 	private bool isCollidingUp = false; // Collision avec le haut
 	private bool isCollidingDown = false; // Collision avec le sol
 	private bool isCollidingRight = false; // Collision avec un mur à droite
@@ -23,6 +25,7 @@ public class ControllerSteve : MonoBehaviour {
 	private Vector2 velocity = Vector2.zero; // vitesse
 	private bool isJumping = false;
 	public float jumpVelocity = 5f;
+	public float initVelocity = -17.5f;
 
 	// Constant donnant le nbr de trait à créer pour la collision vertical
 	private static int verticalRays = 4;
@@ -41,6 +44,7 @@ public class ControllerSteve : MonoBehaviour {
 	void Start ()
 	{
 		mBoxCollider = GetComponent<BoxCollider2D>();
+		velocity.y = initVelocity;
 	}
 
 	// Update is called once per frame
@@ -62,7 +66,6 @@ public class ControllerSteve : MonoBehaviour {
 			jump = true;
 		}
 
-
 		//On regarde s'il y a des collisions à venir avec la velocité souhaitée
 		InitBox();
 		HandleCollisionDown();
@@ -82,7 +85,13 @@ public class ControllerSteve : MonoBehaviour {
 	void LateUpdate()
 	{
 		transform.Translate(velocity * Time.fixedDeltaTime);
+		Debug.Log(transform.position.y);
+		Debug.Log(velocity.y);
 		isJumping = !isCollidingDown;
+		if(isCollidingRight || isCollidingLeft)
+		{
+			isJumping = false;
+		}
 		InitCollisionBool();
 	}
 
@@ -94,6 +103,14 @@ public class ControllerSteve : MonoBehaviour {
 			{
 				velocity.y = jumpVelocity;
 			}
+			else
+			{
+				velocity.y = velocity.y - (masse / (float)2) * gravity;
+			}
+		}
+		else
+		{
+			velocity.y = velocity.y - (masse / (float)2) * gravity;
 		}
 		velocity.x = inputX * speed;
 	}
@@ -127,15 +144,15 @@ public class ControllerSteve : MonoBehaviour {
 	void HandleCollisionDown()
 	{
 		//On initialise startPoint à gauche de la box et le milieu de la box pour le y
-		boxStartPoint = new Vector2(box.xMin + offset, box.center.y);
+		boxStartPoint = new Vector2(box.xMin + offset, box.yMin + offset);
 		//On initialise endPoint à droite de la box et le milieu de la box pour le y
-		boxEndPoint = new Vector2(box.xMax - offset, box.center.y);
+		boxEndPoint = new Vector2(box.xMax - offset, box.yMin + offset);
 
 		//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 		RayCollisionInfos = new RaycastHit2D[verticalRays];
 
 		//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
-		float distance = box.height / 2 + Mathf.Abs(velocity.y * Time.fixedDeltaTime);
+		float distance = offset / 2 + Mathf.Abs(velocity.y * Time.deltaTime + (velocity.y + (masse / (float)2) * gravity) * Time.deltaTime);
 
 		for (int i = 0; i < verticalRays; i++)
 		{
@@ -159,15 +176,15 @@ public class ControllerSteve : MonoBehaviour {
 	void HandleCollisionUp()
 	{
 		//On initialise startPoint à gauche de la box et le milieu de la box pour le y
-		boxStartPoint = new Vector2(box.xMin + offset, box.center.y);
+		boxStartPoint = new Vector2(box.xMin + offset, box.yMax - offset);
 		//On initialise endPoint à droite de la box et le milieu de la box pour le y
-		boxEndPoint = new Vector2(box.xMax - offset, box.center.y);
+		boxEndPoint = new Vector2(box.xMax - offset, box.yMax - offset);
 
 		//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 		RayCollisionInfos = new RaycastHit2D[verticalRays];
 
 		//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
-		float distance = box.height / 2 + Mathf.Abs(velocity.y * Time.fixedDeltaTime);
+		float distance = offset / 2 + Mathf.Abs(velocity.y * Time.fixedDeltaTime);
 
 		for (int i = 0; i < verticalRays; i++)
 		{
@@ -191,14 +208,14 @@ public class ControllerSteve : MonoBehaviour {
 	void HandleCollisionRight()
 	{
 		//init de la délimitation des points entre la gauche et la droite de la box
-		boxStartPoint = new Vector2(box.center.x, box.yMin + offset);
-		boxEndPoint = new Vector2(box.center.x, box.yMax - offset);
+		boxStartPoint = new Vector2(box.xMax - offset, box.yMin + offset);
+		boxEndPoint = new Vector2(box.xMax - offset, box.yMax - offset);
 
 		//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 		RayCollisionInfos = new RaycastHit2D[verticalRays];
 
 		//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
-		float distance = box.height / 2 + Mathf.Abs(velocity.x * Time.fixedDeltaTime);
+		float distance = offset / 2 + Mathf.Abs(velocity.x * Time.fixedDeltaTime);
 
 		for (int i = 0; i < verticalRays; i++)
 		{
@@ -213,7 +230,6 @@ public class ControllerSteve : MonoBehaviour {
 			{
 				isCollidingRight = true;
 				Debug.DrawRay(origin, Vector2.right, Color.red);
-				Debug.Log("touchéRight");
 			}
 		}
 	}
@@ -221,14 +237,14 @@ public class ControllerSteve : MonoBehaviour {
 	void HandleCollisionLeft()
 	{
 		//init de la délimitation des points entre la gauche et la droite de la box
-		boxStartPoint = new Vector2(box.center.x, box.yMin + offset);
-		boxEndPoint = new Vector2(box.center.x, box.yMax - offset);
+		boxStartPoint = new Vector2(box.xMin + offset, box.yMin + offset);
+		boxEndPoint = new Vector2(box.xMin + offset, box.yMax - offset);
 
 		//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 		RayCollisionInfos = new RaycastHit2D[verticalRays];
 
 		//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
-		float distance = box.height / 2 + Mathf.Abs(velocity.x * Time.fixedDeltaTime);
+		float distance = offset / 2 + Mathf.Abs(velocity.x * Time.fixedDeltaTime);
 
 		for (int i = 0; i < verticalRays; i++)
 		{
@@ -243,7 +259,6 @@ public class ControllerSteve : MonoBehaviour {
 			{
 				isCollidingLeft = true;
 				Debug.DrawRay(origin, Vector2.left, Color.red);
-				Debug.Log("touchéRight");
 			}
 		}
 	}
@@ -253,11 +268,6 @@ public class ControllerSteve : MonoBehaviour {
 		if(isCollidingDown)
 		{
 			velocity.y = 0f;
-		}
-		else
-		{
-			//On ajoute la gravité à notre vélocité
-			velocity.y = Mathf.Max(velocity.y - gravity, -maxGravity);
 		}
 	}
 
