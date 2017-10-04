@@ -74,7 +74,7 @@ public class ControllerSeb : MonoBehaviour {
 
 		//gestion de la collision en bas
 		HandleCollisionDown();
-		HandleCollisionSide(inputX);
+		HandleCollisionSide();
 
 		if (grounded)
 		{
@@ -93,7 +93,7 @@ public class ControllerSeb : MonoBehaviour {
 			collideSide = false;
 
 		}
-		if (Input.GetButton("Jump"))
+		if (Input.GetButtonDown("Jump"))
 		{
 			velocity = new Vector2(velocity.x, speed*10);
 			HandleCollisionUp();
@@ -117,6 +117,8 @@ public class ControllerSeb : MonoBehaviour {
 	{
 		transform.Translate(velocity * Time.deltaTime);
 	}
+
+
 	void HandleDeplacement(float inputX, float inputY)
 	{
 		velocity = new Vector2(inputX*speed, inputY*speed);
@@ -187,7 +189,7 @@ public class ControllerSeb : MonoBehaviour {
 		}
 	}
 
-	void HandleCollisionSide(float inputX)
+	void HandleCollisionSide()
 	{
 		//init de la délimitation des points entre la gauche et la droite de la box
 		startPointDown = new Vector2(box.center.x, box.yMin);
@@ -202,32 +204,32 @@ public class ControllerSeb : MonoBehaviour {
 			//on place les traits proportionnellement
 			float lerpAmount = (float)i / (float)(verticalRays - 1);
 			Vector2 origin = Vector2.Lerp(startPointDown, endPointDown, lerpAmount);
-			if (inputX > 0)
+			
+			
+			//On tire les traits vers la droite
+			hitInfosDown[i] = Physics2D.Raycast(origin, Vector2.right, distance, 1 << LayerMask.NameToLayer("Default"));
+			Debug.DrawRay(origin, Vector2.right, Color.green);
+			//if we hit sth
+			if (hitInfosDown[i].fraction > 0)
 			{
-				//On tire les traits vers la droite
-				hitInfosDown[i] = Physics2D.Raycast(origin, Vector2.right, distance, 1 << LayerMask.NameToLayer("Default"));
-				Debug.DrawRay(origin, Vector2.right, Color.green);
-				//if we hit sth
-				if (hitInfosDown[i].fraction > 0)
-				{
-					collideSide = true;
-					Debug.DrawRay(origin, Vector2.right, Color.red);
-					Debug.Log("touchéRight");
-				}
+				collideSide = true;
+				Debug.DrawRay(origin, Vector2.right, Color.red);
+				Debug.Log("touchéRight");
 			}
-			else if (inputX < 0) 
+			
+			
+			
+			//On tire les traits vers la gauche
+			hitInfosDown[i] = Physics2D.Raycast(origin, Vector2.left, distance, 1 << LayerMask.NameToLayer("Default"));
+			Debug.DrawRay(origin, Vector2.left, Color.green);
+			//if we hit sth
+			if (hitInfosDown[i].fraction > 0)
 			{
-				//On tire les traits vers la gauche
-				hitInfosDown[i] = Physics2D.Raycast(origin, Vector2.left, distance, 1 << LayerMask.NameToLayer("Default"));
-				Debug.DrawRay(origin, Vector2.left, Color.green);
-				//if we hit sth
-				if (hitInfosDown[i].fraction > 0)
-				{
-					collideSide = true;
-					Debug.DrawRay(origin, Vector2.left, Color.red);
-					Debug.Log("touchéLeft");
-				}
+				collideSide = true;
+				Debug.DrawRay(origin, Vector2.left, Color.red);
+				Debug.Log("touchéLeft");
 			}
+			
 
 			
 		}
