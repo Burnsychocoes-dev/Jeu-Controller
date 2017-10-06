@@ -15,9 +15,7 @@ public class ControllerSteve : MonoBehaviour {
 
 	// Variables physiques
 	public float gravity = 9.8f;
-	public float masse = 500f;
 	public float maxGravity = 3f;
-	public float maxVelocity = -20f;
 	private bool isCollidingUp = false; // Collision avec le haut
 	private bool isCollidingDown = false; // Collision avec le sol
 	private bool isCollidingRight = false; // Collision avec un mur à droite
@@ -25,7 +23,6 @@ public class ControllerSteve : MonoBehaviour {
 	private Vector2 velocity = Vector2.zero; // vitesse
 	private bool isJumping = false;
 	public float jumpVelocity = 5f;
-	public float initVelocity = -17.5f;
 
 	// Constant donnant le nbr de trait à créer pour la collision vertical
 	private static int verticalRays = 4;
@@ -44,7 +41,6 @@ public class ControllerSteve : MonoBehaviour {
 	void Start ()
 	{
 		mBoxCollider = GetComponent<BoxCollider2D>();
-		velocity.y = initVelocity;
 	}
 
 	// Update is called once per frame
@@ -105,12 +101,12 @@ public class ControllerSteve : MonoBehaviour {
 			}
 			else
 			{
-				velocity.y = velocity.y - (masse / (float)2) * gravity;
+				velocity.y = velocity.y - gravity;
 			}
 		}
 		else
 		{
-			velocity.y = velocity.y - (masse / (float)2) * gravity;
+			velocity.y = velocity.y - gravity;
 		}
 		velocity.x = inputX * speed;
 	}
@@ -152,7 +148,7 @@ public class ControllerSteve : MonoBehaviour {
 		RayCollisionInfos = new RaycastHit2D[verticalRays];
 
 		//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
-		float distance = offset / 2 + Mathf.Abs(velocity.y * Time.deltaTime + (velocity.y + (masse / (float)2) * gravity) * Time.deltaTime);
+		float distance = offset / 2 + Mathf.Abs(velocity.y * Time.deltaTime + (velocity.y - gravity) * Time.deltaTime);
 
 		for (int i = 0; i < verticalRays; i++)
 		{
@@ -168,6 +164,7 @@ public class ControllerSteve : MonoBehaviour {
 			if (RayCollisionInfos[i].collider != null)
 			{
 				isCollidingDown = true;
+				Debug.Log(RayCollisionInfos[i].fraction);
 				Debug.DrawRay(origin, Vector2.down, Color.red);
 			}		
 		}
@@ -200,6 +197,7 @@ public class ControllerSteve : MonoBehaviour {
 			if (RayCollisionInfos[i].collider != null)
 			{
 				isCollidingUp = true;
+				Debug.Log(RayCollisionInfos[i].fraction);
 				Debug.DrawRay(origin, Vector2.up, Color.red);
 			}
 		}
