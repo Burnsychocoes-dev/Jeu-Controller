@@ -27,6 +27,7 @@ public class ControllerSeb : MonoBehaviour {
 	private bool collidedRight = false;
 	private bool isWallJumpingLeft = false;
 	private bool isWallJumpingRight = false;
+	private float distanceToCollide = 0f;
 	public float jumpVelocity = 5f;
 	public float initVelocity = -17.5f;
 
@@ -48,7 +49,7 @@ public class ControllerSeb : MonoBehaviour {
 	{
 		mBoxCollider = GetComponent<BoxCollider2D>();
 		velocity.y = initVelocity;
-		//transform.Translate((new Vector3(10, 0, 0))*Time.deltaTime);
+		//transform.Translate((new Vector3(1, 0, 0))*Time.deltaTime);
 	}
 
 	// Update is called once per frame
@@ -297,7 +298,12 @@ public class ControllerSeb : MonoBehaviour {
 			//if we hit sth
 			if (RayCollisionInfos[i].collider != null)
 			{
-				Debug.Log("colliding right");
+				//Debug.Log("colliding right");
+				Debug.Log(RayCollisionInfos[i].collider.name);
+				//float xmin = RayCollisionInfos[i].collider.GetComponent<Transform>().position.x - RayCollisionInfos[i].collider.GetComponent<BoxCollider2D>().size.x / 2;
+				//Debug.Log(xmin - box.xMax);
+				Debug.Log(RayCollisionInfos[i].distance);				
+				distanceToCollide = RayCollisionInfos[i].distance*2;
 				isCollidingRight = true;
 				Debug.DrawRay(origin, Vector2.right, Color.red);
 			}
@@ -328,6 +334,8 @@ public class ControllerSeb : MonoBehaviour {
 			if (RayCollisionInfos[i].collider != null)
 			{
 				isCollidingLeft = true;
+				Debug.Log(RayCollisionInfos[i].distance);
+				distanceToCollide = RayCollisionInfos[i].distance * 2;
 				Debug.DrawRay(origin, Vector2.left, Color.red);
 			}
 		}
@@ -361,14 +369,14 @@ public class ControllerSeb : MonoBehaviour {
 		{
 			if (velocity.x > 0)
 			{
-				velocity.x = 0f;
+				velocity.x = distanceToCollide;
 			}
 		}
 		if (isCollidingLeft)
 		{
 			if (velocity.x < 0)
 			{
-				velocity.x = 0f;
+				velocity.x = -distanceToCollide;
 			}
 		}
 	}
