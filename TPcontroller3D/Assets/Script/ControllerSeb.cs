@@ -12,7 +12,7 @@ public class ControllerSeb : MonoBehaviour {
 	 * la il sera privé
 	*/
 	public float offset = 0.08f;
-
+	private int frameNumber = 0;
 	// Variables physiques
 	public float gravity = 9.8f;
 	private bool isCollidingUp = false; // Collision avec le haut
@@ -48,6 +48,7 @@ public class ControllerSeb : MonoBehaviour {
 	{
 		mBoxCollider = GetComponent<BoxCollider2D>();
 		velocity.y = initVelocity;
+		//transform.Translate((new Vector3(10, 0, 0))*Time.deltaTime);
 	}
 
 	// Update is called once per frame
@@ -89,7 +90,7 @@ public class ControllerSeb : MonoBehaviour {
 
 	void LateUpdate()
 	{
-		transform.Translate(velocity * Time.fixedDeltaTime);
+		transform.Translate(velocity * Time.deltaTime);
 		//Debug.Log(transform.position.y);
 		//Debug.Log(velocity.y);
 		isJumping = !isCollidingDown;
@@ -111,6 +112,7 @@ public class ControllerSeb : MonoBehaviour {
 			doubleJump = false;
 			isWallJumpingLeft = false;
 			isWallJumpingRight = false;
+			frameNumber = 0;
 		}
 
 		InitCollisionBool();
@@ -129,7 +131,7 @@ public class ControllerSeb : MonoBehaviour {
 			{
 				Debug.Log("wall jump left !");
 				velocity.y = jumpVelocity;
-				velocity.x = jumpVelocity * 2;
+				velocity.x = jumpVelocity/2;
 				isWallJumpingLeft = true;
 				isWallJumpingRight = false;
 				return;
@@ -139,7 +141,7 @@ public class ControllerSeb : MonoBehaviour {
 			{
 				Debug.Log("wall jump right!");
 				velocity.y = jumpVelocity;
-				velocity.x = -jumpVelocity * 2;
+				velocity.x = -jumpVelocity/2;
 				isWallJumpingRight = true;
 				isWallJumpingLeft = false;
 				return;
@@ -159,13 +161,24 @@ public class ControllerSeb : MonoBehaviour {
 				velocity.y = velocity.y -  gravity;
 			}
 		}
+		/*else if(isWallJumpingLeft && frameNumber < 3)
+		{
+			Debug.Log("wall jump left 2!");
+			velocity.y = jumpVelocity;
+			velocity.x = jumpVelocity * 2;
+			frameNumber++;
+			return;
+		}*/
 		else
 		{
 			
 			velocity.y = velocity.y -  gravity;
 		}
-		
-		velocity.x = inputX * speed;
+		if(!isWallJumpingLeft && !isWallJumpingRight)
+		{
+			velocity.x = inputX * speed;
+		}
+		//velocity.x = inputX * speed;
 	}
 
 	void HandleChangeColor()
@@ -197,15 +210,15 @@ public class ControllerSeb : MonoBehaviour {
 	void HandleCollisionDown()
 	{
 		//On initialise startPoint à gauche de la box et le milieu de la box pour le y
-		boxStartPoint = new Vector2(box.xMin + offset, box.yMin + offset);
+		boxStartPoint = new Vector2(box.xMin + offset, box.yMin +offset );
 		//On initialise endPoint à droite de la box et le milieu de la box pour le y
-		boxEndPoint = new Vector2(box.xMax - offset, box.yMin + offset);
+		boxEndPoint = new Vector2(box.xMax - offset, box.yMin +offset);
 
 		//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 		RayCollisionInfos = new RaycastHit2D[verticalRays];
 
 		//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
-		float distance = offset / 2 + Mathf.Abs(velocity.y * Time.deltaTime + (velocity.y -  gravity) * Time.deltaTime);
+		float distance =  offset/2 + Mathf.Abs(velocity.y * Time.deltaTime + (velocity.y -  gravity) * Time.deltaTime);
 		//Debug.Log("distance down");
 		//Debug.Log(distance);
 		for (int i = 0; i < verticalRays; i++)
@@ -232,15 +245,15 @@ public class ControllerSeb : MonoBehaviour {
 	void HandleCollisionUp()
 	{
 		//On initialise startPoint à gauche de la box et le milieu de la box pour le y
-		boxStartPoint = new Vector2(box.xMin + offset, box.yMax - offset);
+		boxStartPoint = new Vector2(box.xMin + offset, box.yMax );
 		//On initialise endPoint à droite de la box et le milieu de la box pour le y
-		boxEndPoint = new Vector2(box.xMax - offset, box.yMax - offset);
+		boxEndPoint = new Vector2(box.xMax - offset, box.yMax );
 
 		//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 		RayCollisionInfos = new RaycastHit2D[verticalRays];
 
 		//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
-		float distance = offset / 2 + Mathf.Abs(velocity.y * Time.deltaTime);
+		float distance =  Mathf.Abs(velocity.y * Time.deltaTime);
 
 		for (int i = 0; i < verticalRays; i++)
 		{
@@ -264,14 +277,14 @@ public class ControllerSeb : MonoBehaviour {
 	void HandleCollisionRight()
 	{
 		//init de la délimitation des points entre la gauche et la droite de la box
-		boxStartPoint = new Vector2(box.xMax - offset, box.yMin + offset);
-		boxEndPoint = new Vector2(box.xMax - offset, box.yMax - offset);
+		boxStartPoint = new Vector2(box.xMax , box.yMin + offset);
+		boxEndPoint = new Vector2(box.xMax , box.yMax - offset);
 
 		//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 		RayCollisionInfos = new RaycastHit2D[verticalRays];
 
 		//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
-		float distance = offset / 2 + Mathf.Abs(velocity.x * Time.fixedDeltaTime);
+		float distance =  Mathf.Abs(velocity.x * Time.fixedDeltaTime);
 
 		for (int i = 0; i < verticalRays; i++)
 		{
@@ -284,6 +297,7 @@ public class ControllerSeb : MonoBehaviour {
 			//if we hit sth
 			if (RayCollisionInfos[i].collider != null)
 			{
+				Debug.Log("colliding right");
 				isCollidingRight = true;
 				Debug.DrawRay(origin, Vector2.right, Color.red);
 			}
@@ -293,14 +307,14 @@ public class ControllerSeb : MonoBehaviour {
 	void HandleCollisionLeft()
 	{
 		//init de la délimitation des points entre la gauche et la droite de la box
-		boxStartPoint = new Vector2(box.xMin + offset, box.yMin + offset);
-		boxEndPoint = new Vector2(box.xMin + offset, box.yMax - offset);
+		boxStartPoint = new Vector2(box.xMin , box.yMin + offset);
+		boxEndPoint = new Vector2(box.xMin , box.yMax - offset);
 
 		//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 		RayCollisionInfos = new RaycastHit2D[verticalRays];
 
 		//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
-		float distance = offset / 2 + Mathf.Abs(velocity.x * Time.fixedDeltaTime);
+		float distance = Mathf.Abs(velocity.x * Time.fixedDeltaTime);
 
 		for (int i = 0; i < verticalRays; i++)
 		{
