@@ -30,6 +30,8 @@ public class ControllerSeb : MonoBehaviour {
 	private float distanceToCollide = 0f;
 	public float jumpVelocity = 5f;
 	public float initVelocity = -17.5f;
+	private float velocityXMultiplicator = 1f;
+	private float velocityYMultiplicator = 1f;
 
 	// Constant donnant le nbr de trait à créer pour la collision vertical
 	private static int verticalRays = 4;
@@ -65,18 +67,23 @@ public class ControllerSeb : MonoBehaviour {
 		float inputY = Input.GetAxis("VerticalStickGauche") + Input.GetAxis("Vertical") + Input.GetAxis("VerticalCroix");
 		//On calcule la velocité du mouvement souhaité par l'utilisateur
 		CalculateVelocity(inputX, inputY, buttonA, buttonJumpDown);
-		buttonJumpDown = Input.GetButtonDown("Jump") || Input.GetButtonDown("buttonA");
+		buttonJumpDown = Input.GetButtonDown("Jump") || Input.GetButtonDown("buttonA") || Input.GetButtonDown("Horizontal");
 		bool jump = false;
 		if(buttonA || inputY > 0)
 		{
 			jump = true;
+			Debug.Log("isJumping");
 		}
 
 		//On regarde s'il y a des collisions à venir avec la velocité souhaitée
 		InitBox();
 		
-		HandleCollisionUp();	
-		HandleCollisionDown();		
+			
+		HandleCollisionDown();
+
+		MultiplyVelocity();
+
+		HandleCollisionUp();
 		HandleCollisionRight();
 		HandleCollisionLeft();
 
@@ -236,6 +243,11 @@ public class ControllerSeb : MonoBehaviour {
 			if (RayCollisionInfos[i].collider != null)
 			{
 				isCollidingDown = true;
+				Debug.Log("colliding down");
+				//Debug.Log(velocity.x);
+				RayCollisionInfos[i].collider.GetComponent<ColliderScript>().ColliderEffect();
+				//Debug.Log(velocity.x);
+				
 				//Debug.Log(RayCollisionInfos[i].fraction);
 				//Debug.Log(RayCollisionInfos[i].collider.name);
 				Debug.DrawRay(origin, Vector2.down, Color.red);
@@ -303,9 +315,15 @@ public class ControllerSeb : MonoBehaviour {
 				//float xmin = RayCollisionInfos[i].collider.GetComponent<Transform>().position.x - RayCollisionInfos[i].collider.GetComponent<BoxCollider2D>().size.x / 2;
 				//Debug.Log(xmin - box.xMax);
 				//Debug.Log(RayCollisionInfos[i].distance);				
-				distanceToCollide = RayCollisionInfos[i].distance*2.75f;
+				distanceToCollide = RayCollisionInfos[i].distance * 2.75f;				
 				isCollidingRight = true;
 				Debug.DrawRay(origin, Vector2.right, Color.red);
+				if (isJumping)
+				{
+					Debug.Log(velocityXMultiplicator);
+					ResetVelocity();
+					Debug.Log(velocityXMultiplicator);
+				}
 			}
 		}
 	}
@@ -339,6 +357,11 @@ public class ControllerSeb : MonoBehaviour {
 				//Debug.Log(RayCollisionInfos[i].fraction * distance);
 				distanceToCollide = RayCollisionInfos[i].distance * 2.75f;
 				Debug.DrawRay(origin, Vector2.left, Color.red);
+
+				if (isJumping)
+				{
+					ResetVelocity();
+				}
 			}
 		}
 	}
@@ -406,5 +429,28 @@ public class ControllerSeb : MonoBehaviour {
 		isCollidingDown = false; 
 		isCollidingRight = false; 
 		isCollidingLeft = false;
+	}
+
+	public void SetVelocityXMultiplicator(float multiplicator)
+	{
+		velocityXMultiplicator = multiplicator;
+	}
+	public void SetVelocityYMultiplicator(float multiplicator)
+	{
+		velocityYMultiplicator = multiplicator;
+	}
+
+	private void MultiplyVelocity()
+	{
+		velocity.x *= velocityXMultiplicator;
+		velocity.y *= velocityYMultiplicator;
+	}
+
+	private void ResetVelocity()
+	{
+		velocity.x /= velocityXMultiplicator;
+		velocity.y /= velocityYMultiplicator;
+		velocityXMultiplicator = 1f;
+		velocityYMultiplicator = 1f;
 	}
 }
