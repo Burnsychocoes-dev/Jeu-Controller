@@ -299,11 +299,11 @@ public class ControllerSeb : MonoBehaviour {
 			if (RayCollisionInfos[i].collider != null)
 			{
 				//Debug.Log("colliding right");
-				Debug.Log(RayCollisionInfos[i].collider.name);
+				//Debug.Log(RayCollisionInfos[i].collider.name);
 				//float xmin = RayCollisionInfos[i].collider.GetComponent<Transform>().position.x - RayCollisionInfos[i].collider.GetComponent<BoxCollider2D>().size.x / 2;
 				//Debug.Log(xmin - box.xMax);
-				Debug.Log(RayCollisionInfos[i].distance);				
-				distanceToCollide = RayCollisionInfos[i].distance*2;
+				//Debug.Log(RayCollisionInfos[i].distance);				
+				distanceToCollide = RayCollisionInfos[i].distance*2.75f;
 				isCollidingRight = true;
 				Debug.DrawRay(origin, Vector2.right, Color.red);
 			}
@@ -334,8 +334,10 @@ public class ControllerSeb : MonoBehaviour {
 			if (RayCollisionInfos[i].collider != null)
 			{
 				isCollidingLeft = true;
-				Debug.Log(RayCollisionInfos[i].distance);
-				distanceToCollide = RayCollisionInfos[i].distance * 2;
+				//Debug.Log("collide left");
+				//Debug.Log(RayCollisionInfos[i].distance);
+				//Debug.Log(RayCollisionInfos[i].fraction * distance);
+				distanceToCollide = RayCollisionInfos[i].distance * 2.75f;
 				Debug.DrawRay(origin, Vector2.left, Color.red);
 			}
 		}
