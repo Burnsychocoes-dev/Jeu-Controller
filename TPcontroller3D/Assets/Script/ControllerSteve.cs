@@ -22,7 +22,12 @@ public class ControllerSteve : MonoBehaviour {
 	private bool isCollidingLeft = false; // Collision avec un mur à gauche
 	private Vector2 velocity = Vector2.zero; // vitesse
 	private bool isJumping = false;
-	public float jumpVelocity = 5f;
+	public float jumpVelocity = 3f;
+	public float colliderDownMarge = 3f;
+	private float distanceBetweenDownCrash = 0f;
+	private int frameNumber = 0;
+	public int maxFrameNumber = 5;
+	private bool buttonJumpDown = false;
 
 	// Constant donnant le nbr de trait à créer pour la collision vertical
 	private static int verticalRays = 4;
@@ -51,15 +56,21 @@ public class ControllerSteve : MonoBehaviour {
 
 	private void FixedUpdate()
 	{
-		bool buttonA = Input.GetButtonDown("buttonA");
+		bool buttonA = Input.GetButton("buttonA");
 		float inputX = Input.GetAxis("HorizontalStickGauche") + Input.GetAxis("Horizontal") + Input.GetAxis("HorizontalCroix");
 		float inputY = Input.GetAxis("VerticalStickGauche") + Input.GetAxis("Vertical") + Input.GetAxis("VerticalCroix");
+		buttonJumpDown = Input.GetButtonDown("buttonA") || Input.GetButtonDown("VerticalStickGauche") || Input.GetButtonDown("Vertical") || Input.GetButtonDown("VerticalCroix");
+		if(buttonJumpDown)
+		{
+			frameNumber = 1;
+		}
 		//On calcule la velocité du mouvement souhaité par l'utilisateur
 		CalculateVelocity(inputX, inputY, buttonA);
 		bool jump = false;
 		if(buttonA || inputY > 0)
 		{
 			jump = true;
+			Debug.Log("is jumping");
 		}
 
 		//On regarde s'il y a des collisions à venir avec la velocité souhaitée
@@ -75,19 +86,33 @@ public class ControllerSteve : MonoBehaviour {
 			HandleGravity();
 		}
 
-		HandleMovement();
+		HandleMovement(inputX, inputY, buttonA);
 	}
 
 	void LateUpdate()
 	{
-		transform.Translate(velocity * Time.fixedDeltaTime);
-		Debug.Log(transform.position.y);
-		Debug.Log(velocity.y);
+		if(isCollidingDown && frameNumber < 1)
+		{
+			transform.Translate(new Vector2(velocity.x * Time.deltaTime, -distanceBetweenDownCrash));
+			frameNumber = 1;
+		}
+		else
+		{
+			transform.Translate(velocity * Time.fixedDeltaTime);
+		}	
+		//Debug.Log(transform.position.y);
+		//Debug.Log(velocity.y);
 		isJumping = !isCollidingDown;
+		if(isJumping && velocity.y<0)
+		{
+			frameNumber = 0;
+		}
+
 		if(isCollidingRight || isCollidingLeft)
 		{
 			isJumping = false;
 		}
+
 		InitCollisionBool();
 	}
 
@@ -140,9 +165,9 @@ public class ControllerSteve : MonoBehaviour {
 	void HandleCollisionDown()
 	{
 		//On initialise startPoint à gauche de la box et le milieu de la box pour le y
-		boxStartPoint = new Vector2(box.xMin + offset, box.yMin + offset);
+		boxStartPoint = new Vector2(box.xMin + offset, box.yMin);
 		//On initialise endPoint à droite de la box et le milieu de la box pour le y
-		boxEndPoint = new Vector2(box.xMax - offset, box.yMin + offset);
+		boxEndPoint = new Vector2(box.xMax - offset, box.yMin);
 
 		//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 		RayCollisionInfos = new RaycastHit2D[verticalRays];
@@ -163,19 +188,26 @@ public class ControllerSteve : MonoBehaviour {
 			//Gestion de collision d'un rayon
 			if (RayCollisionInfos[i].collider != null)
 			{
-				isCollidingDown = true;
-				Debug.Log(RayCollisionInfos[i].fraction);
+				distanceBetweenDownCrash = RayCollisionInfos[i].distance;
+				//Debug.Log(RayCollisionInfos[i].collider.name);
+				if (distanceBetweenDownCrash < colliderDownMarge)
+				{
+					isCollidingDown = true;
+					Debug.Log("is colliding down");
+				}
+				//Debug.Log(RayCollisionInfos[i].fraction);
 				Debug.DrawRay(origin, Vector2.down, Color.red);
 			}		
-		}
+	
+		}		
 	}
 
 	void HandleCollisionUp()
 	{
 		//On initialise startPoint à gauche de la box et le milieu de la box pour le y
-		boxStartPoint = new Vector2(box.xMin + offset, box.yMax - offset);
+		boxStartPoint = new Vector2(box.xMin + offset, box.yMax);
 		//On initialise endPoint à droite de la box et le milieu de la box pour le y
-		boxEndPoint = new Vector2(box.xMax - offset, box.yMax - offset);
+		boxEndPoint = new Vector2(box.xMax - offset, box.yMax);
 
 		//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 		RayCollisionInfos = new RaycastHit2D[verticalRays];
@@ -269,9 +301,9 @@ public class ControllerSteve : MonoBehaviour {
 		}
 	}
 
-	void HandleMovement()
+	void HandleMovement(float inputX, float inputY, bool jump)
 	{
-		if(isCollidingUp)
+		if (isCollidingUp)
 		{
 			if(velocity.y > 0)
 			{
@@ -280,6 +312,11 @@ public class ControllerSteve : MonoBehaviour {
 		}
 		if (isCollidingDown)
 		{
+			if(inputY > 0 || jump)
+			{
+				frameNumber++;
+				isCollidingDown = false;
+			}
 			if (velocity.y < 0)
 			{
 				velocity.y = 0f;

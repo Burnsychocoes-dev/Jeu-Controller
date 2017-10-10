@@ -723,6 +723,19 @@ Prefab:
       propertyPath: speed
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 4095900216810076, guid: dafbd16fdc6860a45a52d4640570deea, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4095900216810076, guid: dafbd16fdc6860a45a52d4640570deea, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114048401850759112, guid: dafbd16fdc6860a45a52d4640570deea,
+        type: 2}
+      propertyPath: colliderDownMarge
+      value: 2.59
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114012302109181820, guid: dafbd16fdc6860a45a52d4640570deea, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: dafbd16fdc6860a45a52d4640570deea, type: 2}
