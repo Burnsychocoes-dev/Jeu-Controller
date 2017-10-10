@@ -23,8 +23,11 @@ public class ControllerSteve : MonoBehaviour {
 	private Vector2 velocity = Vector2.zero; // vitesse
 	private bool isJumping = false;
 	public float jumpVelocity = 3f;
-	public float colliderDownMarge = 3f;
-	private float distanceBetweenDownCrash = 0f;
+	public float colliderMarge = 3f;
+	private float distanceToDownCollide = 0f;
+	private float distanceToRightCollide = 0f;
+	private float distanceToLeftCollide = 0f;
+	private float distanceToUpCollide = 0f;
 	private int frameNumber = 0;
 	public int maxFrameNumber = 5;
 	private bool buttonJumpDown = false;
@@ -59,17 +62,13 @@ public class ControllerSteve : MonoBehaviour {
 		bool buttonA = Input.GetButton("buttonA");
 		float inputX = Input.GetAxis("HorizontalStickGauche") + Input.GetAxis("Horizontal") + Input.GetAxis("HorizontalCroix");
 		float inputY = Input.GetAxis("VerticalStickGauche") + Input.GetAxis("Vertical") + Input.GetAxis("VerticalCroix");
-		buttonJumpDown = Input.GetButtonDown("buttonA") || Input.GetButtonDown("VerticalStickGauche") || Input.GetButtonDown("Vertical") || Input.GetButtonDown("VerticalCroix");
-		if(buttonJumpDown)
-		{
-			frameNumber = 1;
-		}
 		//On calcule la velocité du mouvement souhaité par l'utilisateur
 		CalculateVelocity(inputX, inputY, buttonA);
 		bool jump = false;
 		if(buttonA || inputY > 0)
 		{
 			jump = true;
+			frameNumber = 1;
 			Debug.Log("is jumping");
 		}
 
@@ -91,22 +90,29 @@ public class ControllerSteve : MonoBehaviour {
 
 	void LateUpdate()
 	{
-		if(isCollidingDown && frameNumber < 1)
+		if(isCollidingDown)
 		{
-			transform.Translate(new Vector2(velocity.x * Time.deltaTime, -distanceBetweenDownCrash));
-			frameNumber = 1;
+			transform.Translate(new Vector2(velocity.x * Time.deltaTime, -distanceToDownCollide));
 		}
-		else
+		if(isCollidingUp)
+		{
+			transform.Translate(new Vector2(velocity.x * Time.deltaTime, distanceToUpCollide));
+		}
+		if(isCollidingRight)
+		{
+			transform.Translate(new Vector2(distanceToRightCollide, velocity.y * Time.deltaTime));
+		}
+		if(isCollidingLeft)
+		{
+			transform.Translate(new Vector2(-distanceToLeftCollide, velocity.y * Time.deltaTime));
+		}
+		if(!isCollidingLeft && !isCollidingRight && !isCollidingDown)
 		{
 			transform.Translate(velocity * Time.fixedDeltaTime);
 		}	
 		//Debug.Log(transform.position.y);
 		//Debug.Log(velocity.y);
 		isJumping = !isCollidingDown;
-		if(isJumping && velocity.y<0)
-		{
-			frameNumber = 0;
-		}
 
 		if(isCollidingRight || isCollidingLeft)
 		{
@@ -164,133 +170,182 @@ public class ControllerSteve : MonoBehaviour {
 
 	void HandleCollisionDown()
 	{
-		//On initialise startPoint à gauche de la box et le milieu de la box pour le y
-		boxStartPoint = new Vector2(box.xMin + offset, box.yMin);
-		//On initialise endPoint à droite de la box et le milieu de la box pour le y
-		boxEndPoint = new Vector2(box.xMax - offset, box.yMin);
-
-		//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
-		RayCollisionInfos = new RaycastHit2D[verticalRays];
-
-		//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
-		float distance = offset / 2 + Mathf.Abs(velocity.y * Time.deltaTime + (velocity.y - gravity) * Time.deltaTime);
-
-		for (int i = 0; i < verticalRays; i++)
+		if (velocity.y <= 0)
 		{
-			//Ces petits calculs nous permettent de placer de manière proportionnelle tout les traits
-			float lerpAmount = (float)i / (float)(verticalRays - 1);
-			Vector2 origin = Vector2.Lerp(boxStartPoint, boxEndPoint, lerpAmount);
+			//On initialise startPoint à gauche de la box et le milieu de la box pour le y
+			boxStartPoint = new Vector2(box.xMin + offset, box.yMin);
+			//On initialise endPoint à droite de la box et le milieu de la box pour le y
+			boxEndPoint = new Vector2(box.xMax - offset, box.yMin);
 
-			//Ensuite on tire notre trait vers le bas
-			RayCollisionInfos[i] = Physics2D.Raycast(origin, Vector2.down, distance, 1 << LayerMask.NameToLayer("Default"));
-			Debug.DrawRay(origin, Vector2.down, Color.green);
+			//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
+			RayCollisionInfos = new RaycastHit2D[verticalRays];
 
-			//Gestion de collision d'un rayon
-			if (RayCollisionInfos[i].collider != null)
+			//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
+			float distance = offset / 2 + Mathf.Abs(velocity.y * Time.deltaTime + (velocity.y - gravity) * Time.deltaTime);
+
+			for (int i = 0; i < verticalRays; i++)
 			{
-				distanceBetweenDownCrash = RayCollisionInfos[i].distance;
-				//Debug.Log(RayCollisionInfos[i].collider.name);
-				if (distanceBetweenDownCrash < colliderDownMarge)
+				//Ces petits calculs nous permettent de placer de manière proportionnelle tout les traits
+				float lerpAmount = (float)i / (float)(verticalRays - 1);
+				Vector2 origin = Vector2.Lerp(boxStartPoint, boxEndPoint, lerpAmount);
+
+				//Ensuite on tire notre trait vers le bas
+				RayCollisionInfos[i] = Physics2D.Raycast(origin, Vector2.down, distance, 1 << LayerMask.NameToLayer("Default"));
+				Debug.DrawRay(origin, Vector2.down, Color.green);
+
+				//Gestion de collision d'un rayon
+				if (RayCollisionInfos[i].collider != null)
 				{
-					isCollidingDown = true;
-					Debug.Log("is colliding down");
+					distanceToDownCollide = RayCollisionInfos[i].distance;
+					//Debug.Log(RayCollisionInfos[i].collider.name);
+					if (RayCollisionInfos[i].collider != null)
+					{
+						if (distanceToDownCollide < colliderMarge)
+						{
+							isCollidingDown = true;
+							//Debug.Log("is colliding down");
+						}
+
+					}
+					//Debug.Log(RayCollisionInfos[i].fraction);
+					Debug.DrawRay(origin, Vector2.down, Color.red);
 				}
-				//Debug.Log(RayCollisionInfos[i].fraction);
-				Debug.DrawRay(origin, Vector2.down, Color.red);
-			}		
-	
-		}		
+			}
+		}
 	}
 
 	void HandleCollisionUp()
 	{
-		//On initialise startPoint à gauche de la box et le milieu de la box pour le y
-		boxStartPoint = new Vector2(box.xMin + offset, box.yMax);
-		//On initialise endPoint à droite de la box et le milieu de la box pour le y
-		boxEndPoint = new Vector2(box.xMax - offset, box.yMax);
-
-		//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
-		RayCollisionInfos = new RaycastHit2D[verticalRays];
-
-		//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
-		float distance = offset / 2 + Mathf.Abs(velocity.y * Time.fixedDeltaTime);
-
-		for (int i = 0; i < verticalRays; i++)
+		if(velocity.y >= 0)
 		{
-			//Ces petits calculs nous permettent de placer de manière proportionnelle tout les traits
-			float lerpAmount = (float)i / (float)(verticalRays - 1);
-			Vector2 origin = Vector2.Lerp(boxStartPoint, boxEndPoint, lerpAmount);
+			//On initialise startPoint à gauche de la box et le milieu de la box pour le y
+			boxStartPoint = new Vector2(box.xMin + offset, box.yMax);
+			//On initialise endPoint à droite de la box et le milieu de la box pour le y
+			boxEndPoint = new Vector2(box.xMax - offset, box.yMax);
 
-			//Ensuite on tire notre trait vers le bas
-			RayCollisionInfos[i] = Physics2D.Raycast(origin, Vector2.up, distance, 1 << LayerMask.NameToLayer("Default"));
-			Debug.DrawRay(origin, Vector2.up, Color.green);
+			//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
+			RayCollisionInfos = new RaycastHit2D[verticalRays];
 
-			//Gestion de collision d'un rayon
-			if (RayCollisionInfos[i].collider != null)
+			//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
+			float distance = offset / 2 + Mathf.Abs(velocity.y * Time.fixedDeltaTime);
+
+			for (int i = 0; i < verticalRays; i++)
 			{
-				isCollidingUp = true;
-				Debug.Log(RayCollisionInfos[i].fraction);
-				Debug.DrawRay(origin, Vector2.up, Color.red);
+				//Ces petits calculs nous permettent de placer de manière proportionnelle tout les traits
+				float lerpAmount = (float)i / (float)(verticalRays - 1);
+				Vector2 origin = Vector2.Lerp(boxStartPoint, boxEndPoint, lerpAmount);
+
+				//Ensuite on tire notre trait vers le bas
+				RayCollisionInfos[i] = Physics2D.Raycast(origin, Vector2.up, distance, 1 << LayerMask.NameToLayer("Default"));
+				Debug.DrawRay(origin, Vector2.up, Color.green);
+
+				//Gestion de collision d'un rayon
+				if (RayCollisionInfos[i].collider != null)
+				{
+					distanceToUpCollide = RayCollisionInfos[i].distance;
+					//Debug.Log(RayCollisionInfos[i].collider.name);
+					if (RayCollisionInfos[i].collider != null)
+					{
+						if (distanceToUpCollide < colliderMarge)
+						{
+							isCollidingUp = true;
+							//Debug.Log("is colliding down");
+						}
+
+					}
+					//Debug.Log(RayCollisionInfos[i].fraction);
+					Debug.DrawRay(origin, Vector2.up, Color.red);
+				}
 			}
 		}
 	}
 
 	void HandleCollisionRight()
 	{
-		//init de la délimitation des points entre la gauche et la droite de la box
-		boxStartPoint = new Vector2(box.xMax - offset, box.yMin + offset);
-		boxEndPoint = new Vector2(box.xMax - offset, box.yMax - offset);
-
-		//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
-		RayCollisionInfos = new RaycastHit2D[verticalRays];
-
-		//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
-		float distance = offset / 2 + Mathf.Abs(velocity.x * Time.fixedDeltaTime);
-
-		for (int i = 0; i < verticalRays; i++)
+		if(velocity.x >= 0)
 		{
-			//on place les traits proportionnellement
-			float lerpAmount = (float)i / (float)(verticalRays - 1);
-			Vector2 origin = Vector2.Lerp(boxStartPoint, boxEndPoint, lerpAmount);
-			//On tire les traits vers la droite
-			RayCollisionInfos[i] = Physics2D.Raycast(origin, Vector2.right, distance, 1 << LayerMask.NameToLayer("Default"));
-			Debug.DrawRay(origin, Vector2.right, Color.green);
-			//if we hit sth
-			if (RayCollisionInfos[i].collider != null)
+			//init de la délimitation des points entre la gauche et la droite de la box
+			boxStartPoint = new Vector2(box.xMax, box.yMin + offset);
+			boxEndPoint = new Vector2(box.xMax, box.yMax - offset);
+
+			//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
+			RayCollisionInfos = new RaycastHit2D[verticalRays];
+
+			//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
+			float distance = offset / 2 + Mathf.Abs(velocity.x * Time.fixedDeltaTime);
+
+			for (int i = 0; i < verticalRays; i++)
 			{
-				isCollidingRight = true;
-				Debug.DrawRay(origin, Vector2.right, Color.red);
+				//on place les traits proportionnellement
+				float lerpAmount = (float)i / (float)(verticalRays - 1);
+				Vector2 origin = Vector2.Lerp(boxStartPoint, boxEndPoint, lerpAmount);
+				//On tire les traits vers la droite
+				RayCollisionInfos[i] = Physics2D.Raycast(origin, Vector2.right, distance, 1 << LayerMask.NameToLayer("Default"));
+				Debug.DrawRay(origin, Vector2.right, Color.green);
+
+				//Gestion de collision d'un rayon
+				if (RayCollisionInfos[i].collider != null)
+				{
+					distanceToRightCollide = RayCollisionInfos[i].distance;
+					//Debug.Log(RayCollisionInfos[i].collider.name);
+					if (RayCollisionInfos[i].collider != null)
+					{
+						if (distanceToRightCollide < colliderMarge)
+						{
+							isCollidingRight = true;
+							//Debug.Log("is colliding right");
+						}
+
+					}
+					//Debug.Log(RayCollisionInfos[i].fraction);
+					Debug.DrawRay(origin, Vector2.right, Color.red);
+				}
 			}
-		}
+		}	
 	}
 
 	void HandleCollisionLeft()
 	{
-		//init de la délimitation des points entre la gauche et la droite de la box
-		boxStartPoint = new Vector2(box.xMin + offset, box.yMin + offset);
-		boxEndPoint = new Vector2(box.xMin + offset, box.yMax - offset);
-
-		//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
-		RayCollisionInfos = new RaycastHit2D[verticalRays];
-
-		//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
-		float distance = offset / 2 + Mathf.Abs(velocity.x * Time.fixedDeltaTime);
-
-		for (int i = 0; i < verticalRays; i++)
+		if(velocity.x <= 0)
 		{
-			//on place les traits proportionnellement
-			float lerpAmount = (float)i / (float)(verticalRays - 1);
-			Vector2 origin = Vector2.Lerp(boxStartPoint, boxEndPoint, lerpAmount);
-			//On tire les traits vers la droite
-			RayCollisionInfos[i] = Physics2D.Raycast(origin, Vector2.left, distance, 1 << LayerMask.NameToLayer("Default"));
-			Debug.DrawRay(origin, Vector2.left, Color.green);
-			//if we hit sth
-			if (RayCollisionInfos[i].collider != null)
+			//init de la délimitation des points entre la gauche et la droite de la box
+			boxStartPoint = new Vector2(box.xMin, box.yMin + offset);
+			boxEndPoint = new Vector2(box.xMin, box.yMax - offset);
+
+			//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
+			RayCollisionInfos = new RaycastHit2D[verticalRays];
+
+			//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
+			float distance = offset / 2 + Mathf.Abs(velocity.x * Time.fixedDeltaTime);
+
+			for (int i = 0; i < verticalRays; i++)
 			{
-				isCollidingLeft = true;
-				Debug.DrawRay(origin, Vector2.left, Color.red);
+				//on place les traits proportionnellement
+				float lerpAmount = (float)i / (float)(verticalRays - 1);
+				Vector2 origin = Vector2.Lerp(boxStartPoint, boxEndPoint, lerpAmount);
+				//On tire les traits vers la droite
+				RayCollisionInfos[i] = Physics2D.Raycast(origin, Vector2.left, distance, 1 << LayerMask.NameToLayer("Default"));
+				Debug.DrawRay(origin, Vector2.left, Color.green);
+				//if we hit sth
+				//Gestion de collision d'un rayon
+				if (RayCollisionInfos[i].collider != null)
+				{
+					distanceToLeftCollide = RayCollisionInfos[i].distance;
+					//Debug.Log(RayCollisionInfos[i].collider.name);
+					if (RayCollisionInfos[i].collider != null)
+					{
+						if (distanceToLeftCollide < colliderMarge)
+						{
+							isCollidingLeft = true;
+							//Debug.Log("is colliding left");
+						}
+
+					}
+					//Debug.Log(RayCollisionInfos[i].fraction);
+					Debug.DrawRay(origin, Vector2.left, Color.red);
+				}
 			}
-		}
+		}	
 	}
 
 	void HandleGravity()
@@ -312,11 +367,6 @@ public class ControllerSteve : MonoBehaviour {
 		}
 		if (isCollidingDown)
 		{
-			if(inputY > 0 || jump)
-			{
-				frameNumber++;
-				isCollidingDown = false;
-			}
 			if (velocity.y < 0)
 			{
 				velocity.y = 0f;
