@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ColliderScript : MonoBehaviour {
+	public bool isCrossableFromDown = false;
+
 	public enum ColliderType
 	{
 		NORMAL,
