@@ -37,8 +37,7 @@ public class ControllerSeb : MonoBehaviour {
 	private float velocityXMultiplicator = 1f;
 	private float velocityYMultiplicator = 1f;
 
-	private float rotation = 0f;
-	private float diagonal = 0f;
+	private RectTransform rectTransform;
 	// Constant donnant le nbr de trait à créer pour la collision vertical
 	private static int verticalRays = 4;
 
@@ -56,6 +55,7 @@ public class ControllerSeb : MonoBehaviour {
 	void Start ()
 	{
 		mBoxCollider = GetComponent<BoxCollider2D>();
+		rectTransform = GetComponent<RectTransform>();
 		//transform.Translate((new Vector3(1, 0, 0))*Time.deltaTime);
 		
 	}
@@ -242,16 +242,15 @@ public class ControllerSeb : MonoBehaviour {
 	{
 		if (velocity.y <= 0)
 		{
-			Vector3[] v = new Vector3[4];
-			RectTransform rectTransform = transform.GetComponent<RectTransform>();
+			Vector3[] vertices = new Vector3[4];
+			rectTransform.GetWorldCorners(vertices);
 			//On initialise startPoint à gauche de la box et le milieu de la box pour le y
-			rectTransform.GetWorldCorners(v);
 			Vector3 up = rectTransform.up;
-			boxStartPoint = new Vector2(v[0].x, v[0].y);
+			Vector2 down = new Vector2(-up[0], -up[1]);
+			float angle = transform.eulerAngles.z * Mathf.PI / 180;
+			boxStartPoint = new Vector2(vertices[0].x + offset * Mathf.Cos(angle), vertices[0].y + offset * Mathf.Sin(angle));
 			//On initialise endPoint à droite de la box et le milieu de la box pour le y
-			boxEndPoint = new Vector2(v[3].x, v[3].y);
-			Debug.Log(boxStartPoint);
-			Debug.Log(boxEndPoint);
+			boxEndPoint = new Vector2(vertices[3].x - offset * Mathf.Cos(angle), vertices[3].y + offset * Mathf.Sin(angle));
 			//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 			RayCollisionInfos = new RaycastHit2D[verticalRays];
 
@@ -265,22 +264,18 @@ public class ControllerSeb : MonoBehaviour {
 				float lerpAmount = (float)i / (float)(verticalRays - 1);
 				Vector2 origin = Vector2.Lerp(boxStartPoint, boxEndPoint, lerpAmount);
 				//envoie les rayons par rapport au bas de l'objet (rotation incluse)
-				Vector2 direction = new Vector2(Mathf.Sin(transform.eulerAngles.z * Mathf.PI / 180), -Mathf.Cos(transform.eulerAngles.z * Mathf.PI / 180));
+				//Vector2 direction = new Vector2(Mathf.Sin(transform.eulerAngles.z * Mathf.PI / 180), -Mathf.Cos(transform.eulerAngles.z * Mathf.PI / 180));
 				
 				//Ensuite on tire notre trait vers le bas
-				RayCollisionInfos[i] = Physics2D.Raycast(origin, new Vector2(-up[0],-up[1]), distance, 1 << LayerMask.NameToLayer("Default"));
-				Debug.DrawRay(origin, direction, Color.green);
+				RayCollisionInfos[i] = Physics2D.Raycast(origin,down, distance, 1 << LayerMask.NameToLayer("Default"));
+				Debug.DrawRay(origin, down, Color.green);
 				distanceToDownCollide = RayCollisionInfos[i].distance;
 				//Gestion de collision d'un rayon
 				if (RayCollisionInfos[i].collider != null && distanceToDownCollide<colliderMarge)
 				{
-					isCollidingDown = true;
-					
-					//Debug.Log("colliding down");
-					//Debug.Log(RayCollisionInfos[i].distance);
-
+					isCollidingDown = true;					
 					RayCollisionInfos[i].collider.GetComponent<ColliderScript>().ColliderEffect();
-					Debug.DrawRay(origin, direction, Color.red);
+					Debug.DrawRay(origin, down, Color.red);
 				}
 			}
 		}
@@ -291,10 +286,16 @@ public class ControllerSeb : MonoBehaviour {
 	{
 		if(velocity.y > 0)
 		{
+			Vector3[] vertices = new Vector3[4];
+			rectTransform.GetWorldCorners(vertices);
 			//On initialise startPoint à gauche de la box et le milieu de la box pour le y
-			boxStartPoint = new Vector2(box.xMin + offset, box.yMax);
+			Vector3 up = rectTransform.up;
+			Vector2 up2 = new Vector2(up[0], up[1]);
+			float angle = transform.eulerAngles.z * Mathf.PI/180;
+			//On initialise startPoint à gauche de la box et le milieu de la box pour le y
+			boxStartPoint = new Vector2(vertices[1].x + offset * Mathf.Cos(angle), vertices[1].y + offset * Mathf.Sin(angle));
 			//On initialise endPoint à droite de la box et le milieu de la box pour le y
-			boxEndPoint = new Vector2(box.xMax - offset, box.yMax);
+			boxEndPoint = new Vector2(vertices[2].x - offset * Mathf.Cos(angle), vertices[2].y + offset * Mathf.Sin(angle));
 
 			//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 			RayCollisionInfos = new RaycastHit2D[verticalRays];
@@ -310,8 +311,8 @@ public class ControllerSeb : MonoBehaviour {
 				Vector2 origin = Vector2.Lerp(boxStartPoint, boxEndPoint, lerpAmount);
 
 				//Ensuite on tire notre trait vers le bas
-				RayCollisionInfos[i] = Physics2D.Raycast(origin, Vector2.up, distance, 1 << LayerMask.NameToLayer("Default"));
-				Debug.DrawRay(origin, Vector2.up, Color.green);
+				RayCollisionInfos[i] = Physics2D.Raycast(origin, up2, distance, 1 << LayerMask.NameToLayer("Default"));
+				Debug.DrawRay(origin, up2, Color.green);
 
 				distanceToUpCollide = RayCollisionInfos[i].distance;
 
@@ -321,7 +322,7 @@ public class ControllerSeb : MonoBehaviour {
 					if (!RayCollisionInfos[i].collider.GetComponent<ColliderScript>().isCrossableFromDown)
 					{
 						isCollidingUp = true;
-						Debug.DrawRay(origin, Vector2.up, Color.red);
+						Debug.DrawRay(origin, up2, Color.red);
 					}
 					
 				}
@@ -334,9 +335,16 @@ public class ControllerSeb : MonoBehaviour {
 	{
 		if(velocity.x >= 0)
 		{
+			Vector3[] vertices = new Vector3[4];
+			rectTransform.GetWorldCorners(vertices);
+			//On initialise startPoint à gauche de la box et le milieu de la box pour le y
+			Vector3 right = rectTransform.right;
+			Vector2 right2 = new Vector2(right[0], right[1]);
+			float angle = transform.eulerAngles.z * Mathf.PI / 180;
 			//init de la délimitation des points entre la gauche et la droite de la box
-			boxStartPoint = new Vector2(box.xMax, box.yMin + offset);
-			boxEndPoint = new Vector2(box.xMax, box.yMax - offset);
+			boxStartPoint = new Vector2(vertices[2].x + offset * Mathf.Sin(angle), vertices[2].y - offset * Mathf.Cos(angle));
+			//On initialise endPoint à droite de la box et le milieu de la box pour le y
+			boxEndPoint = new Vector2(vertices[3].x + offset * Mathf.Sin(angle), vertices[3].y + offset * Mathf.Cos(angle));
 
 			//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 			RayCollisionInfos = new RaycastHit2D[verticalRays];
@@ -350,25 +358,17 @@ public class ControllerSeb : MonoBehaviour {
 				float lerpAmount = (float)i / (float)(verticalRays - 1);
 				Vector2 origin = Vector2.Lerp(boxStartPoint, boxEndPoint, lerpAmount);
 				//On tire les traits vers la droite
-				RayCollisionInfos[i] = Physics2D.Raycast(origin, Vector2.right, distance, 1 << LayerMask.NameToLayer("Default"));
-				Debug.DrawRay(origin, Vector2.right, Color.green);
+				RayCollisionInfos[i] = Physics2D.Raycast(origin, right2, distance, 1 << LayerMask.NameToLayer("Default"));
+				Debug.DrawRay(origin, right2, Color.green);
 				distanceToRightCollide = RayCollisionInfos[i].distance;
 				//if we hit sth
 				if (RayCollisionInfos[i].collider != null && distanceToRightCollide < colliderMarge)
 				{
-					//Debug.Log("colliding right");
-					//Debug.Log(RayCollisionInfos[i].collider.name);
-					//float xmin = RayCollisionInfos[i].collider.GetComponent<Transform>().position.x - RayCollisionInfos[i].collider.GetComponent<BoxCollider2D>().size.x / 2;
-					//Debug.Log(xmin - box.xMax);
-					//Debug.Log(RayCollisionInfos[i].distance);				
-
 					isCollidingRight = true;
-					Debug.DrawRay(origin, Vector2.right, Color.red);
+					Debug.DrawRay(origin, right2, Color.red);
 					if (isJumping)
 					{
-						//Debug.Log(velocityXMultiplicator);
 						ResetVelocity();
-						//Debug.Log(velocityXMultiplicator);
 					}
 				}
 			}
@@ -380,9 +380,16 @@ public class ControllerSeb : MonoBehaviour {
 	{
 		if(velocity.x <= 0)
 		{
+			Vector3[] vertices = new Vector3[4];
+			rectTransform.GetWorldCorners(vertices);
+			//On initialise startPoint à gauche de la box et le milieu de la box pour le y
+			Vector3 right = rectTransform.right;
+			Vector2 left = new Vector2(-right[0], -right[1]);
+			float angle = transform.eulerAngles.z * Mathf.PI / 180;
 			//init de la délimitation des points entre la gauche et la droite de la box
-			boxStartPoint = new Vector2(box.xMin, box.yMin + offset);
-			boxEndPoint = new Vector2(box.xMin, box.yMax - offset);
+			boxStartPoint = new Vector2(vertices[0].x + offset * Mathf.Sin(angle), vertices[0].y + offset * Mathf.Cos(angle));
+			//On initialise endPoint à droite de la box et le milieu de la box pour le y
+			boxEndPoint = new Vector2(vertices[1].x + offset * Mathf.Sin(angle), vertices[1].y - offset * Mathf.Cos(angle));
 
 			//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 			RayCollisionInfos = new RaycastHit2D[verticalRays];
@@ -396,19 +403,14 @@ public class ControllerSeb : MonoBehaviour {
 				float lerpAmount = (float)i / (float)(verticalRays - 1);
 				Vector2 origin = Vector2.Lerp(boxStartPoint, boxEndPoint, lerpAmount);
 				//On tire les traits vers la droite
-				RayCollisionInfos[i] = Physics2D.Raycast(origin, Vector2.left, distance, 1 << LayerMask.NameToLayer("Default"));
-				Debug.DrawRay(origin, Vector2.left, Color.green);
+				RayCollisionInfos[i] = Physics2D.Raycast(origin, left, distance, 1 << LayerMask.NameToLayer("Default"));
+				Debug.DrawRay(origin, left, Color.green);
 				distanceToLeftCollide = RayCollisionInfos[i].distance;
 				//if we hit sth
 				if (RayCollisionInfos[i].collider != null && distanceToLeftCollide < colliderMarge)
 				{
 					isCollidingLeft = true;
-					//Debug.Log("collide left");
-					//Debug.Log(RayCollisionInfos[i].distance);
-					//Debug.Log(RayCollisionInfos[i].fraction * distance);
-
-					Debug.DrawRay(origin, Vector2.left, Color.red);
-
+					Debug.DrawRay(origin, left, Color.red);
 					if (isJumping)
 					{
 						ResetVelocity();
