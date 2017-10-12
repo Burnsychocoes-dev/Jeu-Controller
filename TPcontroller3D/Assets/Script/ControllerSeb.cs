@@ -37,7 +37,7 @@ public class ControllerSeb : MonoBehaviour {
 	private float velocityXMultiplicator = 1f;
 	private float velocityYMultiplicator = 1f;
 
-	private RectTransform rectTransform;
+	private RectTransform mRectTransform;
 	// Constant donnant le nbr de trait à créer pour la collision vertical
 	private static int verticalRays = 4;
 
@@ -55,7 +55,7 @@ public class ControllerSeb : MonoBehaviour {
 	void Start ()
 	{
 		mBoxCollider = GetComponent<BoxCollider2D>();
-		rectTransform = GetComponent<RectTransform>();
+		mRectTransform = GetComponent<RectTransform>();
 		//transform.Translate((new Vector3(1, 0, 0))*Time.deltaTime);
 		
 	}
@@ -106,6 +106,11 @@ public class ControllerSeb : MonoBehaviour {
 		}
 
 		HandleMovement();
+
+		if(!isCollidingDown)
+		{
+			mRectTransform.Rotate(-transform.eulerAngles);
+		}
 	}
 
 	void LateUpdate()
@@ -135,7 +140,7 @@ public class ControllerSeb : MonoBehaviour {
 			isWallJumpingRight = false;
 			frameNumber = 0;
 			buttonJumpDownCounter = 0;
-			transform.Translate(new Vector2(velocity.x * Time.deltaTime, -distanceToDownCollide));
+			transform.Translate(new Vector2(velocity.x * Time.deltaTime, -distanceToDownCollide * Mathf.Sin(transform.eulerAngles.z)));
 		}
 		else
 		{
@@ -151,7 +156,12 @@ public class ControllerSeb : MonoBehaviour {
 
 	void CalculateVelocity(float inputX, float inputY, bool jump, bool buttonJumpDown)
 	{
-		if(inputY > 0 || jump)
+		float angle = transform.eulerAngles.z * Mathf.PI / 180;
+		if (!isWallJumpingLeft && !isWallJumpingRight)
+		{
+			velocity.x = inputX * speed * Mathf.Cos(angle);
+		}
+		if (inputY > 0 || jump)
 		{
 			if(!isJumping)
 			{
@@ -188,8 +198,9 @@ public class ControllerSeb : MonoBehaviour {
 
 			else
 			{
-				
+				//Debug.Log(angle);
 				velocity.y = velocity.y -  gravity;
+				velocity.x = velocity.x - gravity * Mathf.Sin(angle);			
 			}
 		}
 		/*else if(isWallJumpingLeft && frameNumber < 3)
@@ -202,12 +213,8 @@ public class ControllerSeb : MonoBehaviour {
 		}*/
 		else
 		{
-			
-			velocity.y = velocity.y -  gravity;
-		}
-		if(!isWallJumpingLeft && !isWallJumpingRight)
-		{
-			velocity.x = inputX * speed;
+			velocity.y = velocity.y - gravity;
+			velocity.x = velocity.x - gravity * Mathf.Sin(angle);			
 		}
 		//velocity.x = inputX * speed;
 	}
@@ -243,14 +250,14 @@ public class ControllerSeb : MonoBehaviour {
 		if (velocity.y <= 0)
 		{
 			Vector3[] vertices = new Vector3[4];
-			rectTransform.GetWorldCorners(vertices);
+			mRectTransform.GetWorldCorners(vertices);
 			//On initialise startPoint à gauche de la box et le milieu de la box pour le y
-			Vector3 up = rectTransform.up;
+			Vector3 up = mRectTransform.up;
 			Vector2 down = new Vector2(-up[0], -up[1]);
 			float angle = transform.eulerAngles.z * Mathf.PI / 180;
 			boxStartPoint = new Vector2(vertices[0].x + offset * Mathf.Cos(angle), vertices[0].y + offset * Mathf.Sin(angle));
 			//On initialise endPoint à droite de la box et le milieu de la box pour le y
-			boxEndPoint = new Vector2(vertices[3].x - offset * Mathf.Cos(angle), vertices[3].y + offset * Mathf.Sin(angle));
+			boxEndPoint = new Vector2(vertices[3].x - offset * Mathf.Cos(angle), vertices[3].y - offset * Mathf.Sin(angle));
 			//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 			RayCollisionInfos = new RaycastHit2D[verticalRays];
 
@@ -271,10 +278,11 @@ public class ControllerSeb : MonoBehaviour {
 				Debug.DrawRay(origin, down, Color.green);
 				distanceToDownCollide = RayCollisionInfos[i].distance;
 				//Gestion de collision d'un rayon
-				if (RayCollisionInfos[i].collider != null && distanceToDownCollide<colliderMarge)
+				if (RayCollisionInfos[i].collider != null && distanceToDownCollide < colliderMarge)
 				{
 					isCollidingDown = true;					
 					RayCollisionInfos[i].collider.GetComponent<ColliderScript>().ColliderEffect();
+					mRectTransform.rotation = RayCollisionInfos[i].collider.GetComponent<Transform>().rotation;
 					Debug.DrawRay(origin, down, Color.red);
 				}
 			}
@@ -287,15 +295,15 @@ public class ControllerSeb : MonoBehaviour {
 		if(velocity.y > 0)
 		{
 			Vector3[] vertices = new Vector3[4];
-			rectTransform.GetWorldCorners(vertices);
+			mRectTransform.GetWorldCorners(vertices);
 			//On initialise startPoint à gauche de la box et le milieu de la box pour le y
-			Vector3 up = rectTransform.up;
+			Vector3 up = mRectTransform.up;
 			Vector2 up2 = new Vector2(up[0], up[1]);
 			float angle = transform.eulerAngles.z * Mathf.PI/180;
 			//On initialise startPoint à gauche de la box et le milieu de la box pour le y
 			boxStartPoint = new Vector2(vertices[1].x + offset * Mathf.Cos(angle), vertices[1].y + offset * Mathf.Sin(angle));
 			//On initialise endPoint à droite de la box et le milieu de la box pour le y
-			boxEndPoint = new Vector2(vertices[2].x - offset * Mathf.Cos(angle), vertices[2].y + offset * Mathf.Sin(angle));
+			boxEndPoint = new Vector2(vertices[2].x - offset * Mathf.Cos(angle), vertices[2].y - offset * Mathf.Sin(angle));
 
 			//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 			RayCollisionInfos = new RaycastHit2D[verticalRays];
@@ -336,15 +344,15 @@ public class ControllerSeb : MonoBehaviour {
 		if(velocity.x >= 0)
 		{
 			Vector3[] vertices = new Vector3[4];
-			rectTransform.GetWorldCorners(vertices);
+			mRectTransform.GetWorldCorners(vertices);
 			//On initialise startPoint à gauche de la box et le milieu de la box pour le y
-			Vector3 right = rectTransform.right;
+			Vector3 right = mRectTransform.right;
 			Vector2 right2 = new Vector2(right[0], right[1]);
 			float angle = transform.eulerAngles.z * Mathf.PI / 180;
 			//init de la délimitation des points entre la gauche et la droite de la box
 			boxStartPoint = new Vector2(vertices[2].x + offset * Mathf.Sin(angle), vertices[2].y - offset * Mathf.Cos(angle));
 			//On initialise endPoint à droite de la box et le milieu de la box pour le y
-			boxEndPoint = new Vector2(vertices[3].x + offset * Mathf.Sin(angle), vertices[3].y + offset * Mathf.Cos(angle));
+			boxEndPoint = new Vector2(vertices[3].x - offset * Mathf.Sin(angle), vertices[3].y + offset * Mathf.Cos(angle));
 
 			//On initialise le tableau des infos de collision au nombre de traits souhaités vers le bas
 			RayCollisionInfos = new RaycastHit2D[verticalRays];
@@ -381,13 +389,13 @@ public class ControllerSeb : MonoBehaviour {
 		if(velocity.x <= 0)
 		{
 			Vector3[] vertices = new Vector3[4];
-			rectTransform.GetWorldCorners(vertices);
+			mRectTransform.GetWorldCorners(vertices);
 			//On initialise startPoint à gauche de la box et le milieu de la box pour le y
-			Vector3 right = rectTransform.right;
+			Vector3 right = mRectTransform.right;
 			Vector2 left = new Vector2(-right[0], -right[1]);
 			float angle = transform.eulerAngles.z * Mathf.PI / 180;
 			//init de la délimitation des points entre la gauche et la droite de la box
-			boxStartPoint = new Vector2(vertices[0].x + offset * Mathf.Sin(angle), vertices[0].y + offset * Mathf.Cos(angle));
+			boxStartPoint = new Vector2(vertices[0].x - offset * Mathf.Sin(angle), vertices[0].y + offset * Mathf.Cos(angle));
 			//On initialise endPoint à droite de la box et le milieu de la box pour le y
 			boxEndPoint = new Vector2(vertices[1].x + offset * Mathf.Sin(angle), vertices[1].y - offset * Mathf.Cos(angle));
 
