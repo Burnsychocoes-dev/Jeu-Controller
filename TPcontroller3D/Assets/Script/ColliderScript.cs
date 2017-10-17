@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ColliderScript : MonoBehaviour {
+	public bool moveOnCollision = false;
 	public bool isCrossableFromDown = false;
 	public float slowMultiplicator = 0.66f;
 	public float iceMultiplicator = 3f;
@@ -48,6 +49,10 @@ public class ColliderScript : MonoBehaviour {
 			case ColliderType.LAVA:
 				//Mettre l'état mort au joueur -> on remet sa vitesse à 0 et on le tp aux coordonnées du début
 				break;
+		}
+		if (moveOnCollision)
+		{
+			transform.GetComponent<PlateformeMovingScript>().active = true;
 		}
 			
 
