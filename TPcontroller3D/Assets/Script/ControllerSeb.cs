@@ -20,6 +20,7 @@ public class ControllerSeb : MonoBehaviour {
 	private bool isCollidingRight = false; // Collision avec un mur à droite
 	private bool isCollidingLeft = false; // Collision avec un mur à gauche
 	private Vector2 velocity = Vector2.zero; // vitesse
+	private Vector3 translate = Vector3.zero;
 	bool jump = false;
 	private bool isJumping = false;
 	private bool doubleJump = false;
@@ -27,6 +28,8 @@ public class ControllerSeb : MonoBehaviour {
 	private int buttonJumpDownCounter = 0;
 	private bool collidedLeft = false;
 	private bool collidedRight = false;
+	private int collidedLeftCounter = 0;
+	private int collidedRightCounter = 0;
 	private bool isWallJumpingLeft = false;
 	private bool isWallJumpingRight = false;
 	private float distanceToRightCollide = 0f;
@@ -37,6 +40,8 @@ public class ControllerSeb : MonoBehaviour {
 	public float jumpVelocity = 5f;
 	private float velocityXMultiplicator = 1f;
 	private float velocityYMultiplicator = 1f;
+	private int collidedDownCounter = 0;
+	private bool collidingAMovingPlatform = false;
 	private Vector2 downContactPlatformVelocity;
 	private Vector3 positionInitial;
 
@@ -86,8 +91,6 @@ public class ControllerSeb : MonoBehaviour {
 		if(buttonA || inputY > 0)
 		{
 			jump = true;
-			//Debug.Log("isJumping");
-			//Debug.Log(doubleJump);
 		}
 		
 
@@ -98,7 +101,10 @@ public class ControllerSeb : MonoBehaviour {
 		HandleCollisionDown();
 
 		MultiplyVelocity();
-
+		velocity.x += downContactPlatformVelocity.x;		
+		velocity.y += downContactPlatformVelocity.y;
+		//il faut aussi annuler la gravité
+		
 		HandleCollisionUp();
 		HandleCollisionRight();
 		HandleCollisionLeft();
@@ -122,40 +128,64 @@ public class ControllerSeb : MonoBehaviour {
 		if(isCollidingRight)
 		{
 			collidedRight = true;
-			if (Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) > 0.1)
+			if (collidedRightCounter < 5)
 			{
-				transform.Translate(new Vector2(distanceToRightCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.deltaTime));
+				if (Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) > 0.1)
+				{
+					transform.Translate(new Vector2(distanceToRightCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.deltaTime));
+					collidedRightCounter++;
+				}
+				else
+				{
+					transform.Translate(new Vector2(distanceToRightCollide, velocity.y * Time.deltaTime));
+				}
+				collidedRightCounter++;
 			}
-			else
-			{
-				transform.Translate(new Vector2(distanceToRightCollide, velocity.y * Time.deltaTime));
-			}
+			
 		}
-		else if(isCollidingLeft)
+		else
+		{
+			collidedRight = false;
+			collidedRightCounter = 0;
+		}
+		if(isCollidingLeft)
 		{
 			collidedLeft = true;
-			if (Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) > 0.1)
+			if (collidedLeftCounter < 5)
 			{
-				transform.Translate(new Vector2(-distanceToLeftCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.deltaTime));
+				if (Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) > 0.1)
+				{
+					transform.Translate(new Vector2(-distanceToLeftCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.deltaTime));
+					collidedLeftCounter++;
+				}
+				else
+				{
+					transform.Translate(new Vector2(-distanceToLeftCollide, velocity.y * Time.deltaTime));
+				}
 			}
-			else
-			{
-				transform.Translate(new Vector2(-distanceToLeftCollide, velocity.y * Time.deltaTime));
-			}
+			
 		}
-		else if (isCollidingUp)
+		else
+		{			
+			collidedLeft = false;
+			collidedLeftCounter = 0;
+		}
+		if (isCollidingUp)
 		{
 			transform.Translate(new Vector2(velocity.x * Time.deltaTime, distanceToUpCollide));
 		}
-		else if (isCollidingDown)
+		if (isCollidingDown)
 		{
+			collidedDownCounter++;
 			doubleJump = false;
 			isWallJumpingLeft = false;
 			isWallJumpingRight = false;
 			frameNumber = 0;
 			buttonJumpDownCounter = 0;
 			//Debug.Log(Mathf.Sin(transform.eulerAngles.z));
-			if(Mathf.Abs(Mathf.Cos(transform.eulerAngles.z)) > 0.1)
+			//transform.Translate(downContactPlatformVelocity * Time.fixedDeltaTime);
+			//transform.Translate(translate);
+			if (Mathf.Abs(Mathf.Cos(transform.eulerAngles.z)) > 0.1)
 			{
 				transform.Translate(new Vector2(velocity.x * Time.deltaTime, -distanceToDownCollide * Mathf.Abs(Mathf.Cos(transform.eulerAngles.z))));
 			}
@@ -163,11 +193,14 @@ public class ControllerSeb : MonoBehaviour {
 			{
 				transform.Translate(new Vector2(velocity.x * Time.deltaTime, -distanceToDownCollide));
 			}
+
 		}
 		else
 		{
-			collidedRight = false;
-			collidedLeft = false;
+			collidingAMovingPlatform = false;
+		}		
+		if(!isCollidingDown && !isCollidingLeft && !isCollidingRight && !isCollidingUp)
+		{						
 			transform.Translate(velocity * Time.deltaTime);
 		}		
 		
@@ -239,7 +272,7 @@ public class ControllerSeb : MonoBehaviour {
 			velocity.x = velocity.x - gravity * Mathf.Sin(angle);			
 		}
 		//velocity.x = inputX * speed;
-		velocity += downContactPlatformVelocity;
+		//velocity += downContactPlatformVelocity;
 	}
 
 	void HandleChangeColor()
@@ -270,7 +303,7 @@ public class ControllerSeb : MonoBehaviour {
 
 	void HandleCollisionDown()
 	{
-		if (velocity.y <= 0)
+		if (velocity.y <= 0 || collidingAMovingPlatform)
 		{
 			Vector3[] vertices = new Vector3[4];
 			mRectTransform.GetWorldCorners(vertices);
@@ -309,6 +342,11 @@ public class ControllerSeb : MonoBehaviour {
 					//RayCollisionInfos[i].collider.GetComponent<ColliderScript>().ActiveMovement();
 					downContactPlatformVelocity = new Vector2(RayCollisionInfos[i].collider.GetComponent<PlateformeMovingScript>().speedX,
 															RayCollisionInfos[i].collider.GetComponent<PlateformeMovingScript>().speedY);
+					if(downContactPlatformVelocity.y != 0)
+					{
+						collidingAMovingPlatform = true;
+					}
+					translate = RayCollisionInfos[i].collider.GetComponent<PlateformeMovingScript>().translate;
 					/*
 					float platformAngle = RayCollisionInfos[i].collider.GetComponent<Transform>().eulerAngles.z;
 					mRectTransform.RotateAround(
@@ -471,7 +509,9 @@ public class ControllerSeb : MonoBehaviour {
 	{
 		if(isCollidingDown)
 		{
-			velocity.y = 0f;
+			//transform.Translate(new Vector3(0, translate.y, 0));
+			//velocity.y = downContactPlatformVelocity.y;
+			//velocity.y = 0;
 		}
 	}
 

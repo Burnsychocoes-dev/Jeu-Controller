@@ -11,6 +11,7 @@ public class PlateformeMovingScript : MonoBehaviour {
 	public float maxTranslateY = 0f;
 	public float translateX = 0f;
 	public float translateY = 0f;
+	public Vector3 translate;
 	private float timer = 0f;
 	// Use this for initialization
 	void Start () {
@@ -18,7 +19,7 @@ public class PlateformeMovingScript : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void LateUpdate () {
 		if(timer>= delay && active)
 		{
 			if (Mathf.Abs(translateX) < maxTranslateX)
@@ -39,7 +40,7 @@ public class PlateformeMovingScript : MonoBehaviour {
 				translateY = 0;
 				speedY *= -1;
 			}
-
+			translate = new Vector3(speedX * Time.deltaTime, speedY * Time.deltaTime, 0);
 			transform.Translate(speedX * Time.deltaTime, speedY * Time.deltaTime, 0);
 		}
 		else
