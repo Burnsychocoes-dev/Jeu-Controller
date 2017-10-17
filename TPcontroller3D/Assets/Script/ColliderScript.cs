@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class ColliderScript : MonoBehaviour {
 	public bool isCrossableFromDown = false;
-
+	public float slowMultiplicator = 0.66f;
+	public float iceMultiplicator = 3f;
+	//public float bouncingMultiplicator = 1f;
+	public float waterMultiplicator = 0.66f;
 	public enum ColliderType
 	{
 		NORMAL,
@@ -12,6 +15,7 @@ public class ColliderScript : MonoBehaviour {
 		ICE,
 		BOUNCING,
 		WATER,
+		LAVA
 		
 	}
 
@@ -29,17 +33,20 @@ public class ColliderScript : MonoBehaviour {
 				seb.SetVelocityYMultiplicator(1f);
 				break;
 			case ColliderType.SLOWING:
-				seb.SetVelocityXMultiplicator(0.66f);
+				seb.SetVelocityXMultiplicator(slowMultiplicator);
 				break;
 			case ColliderType.ICE:
-				seb.SetVelocityXMultiplicator(3f);
+				seb.SetVelocityXMultiplicator(iceMultiplicator);
 				break;
 			case ColliderType.BOUNCING:
-				
+				//Activer le jump du joueur
 				break;
 			case ColliderType.WATER:
-				seb.SetVelocityXMultiplicator(0.66f);
-				seb.SetVelocityYMultiplicator(0.66f);
+				seb.SetVelocityXMultiplicator(waterMultiplicator);
+				seb.SetVelocityYMultiplicator(waterMultiplicator);
+				break;
+			case ColliderType.LAVA:
+				//Mettre l'état mort au joueur -> on remet sa vitesse à 0 et on le tp aux coordonnées du début
 				break;
 		}
 			
