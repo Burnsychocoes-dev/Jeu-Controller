@@ -11,7 +11,7 @@ public class ControllerSeb : MonoBehaviour {
 	 * et qu'on teste des collisions) je l'ai reglé en live en le changeant depuis l'inspector
 	 * la il sera privé
 	*/
-	public float offset = 0.08f;
+	private float offset = 0.08f;
 	private int frameNumber = 0;
 	// Variables physiques
 	public float gravity = 1f;
@@ -36,6 +36,7 @@ public class ControllerSeb : MonoBehaviour {
 	public float jumpVelocity = 5f;
 	private float velocityXMultiplicator = 1f;
 	private float velocityYMultiplicator = 1f;
+	private Vector3 positionInitial;
 
 	private RectTransform mRectTransform;
 	// Constant donnant le nbr de trait à créer pour la collision vertical
@@ -56,8 +57,9 @@ public class ControllerSeb : MonoBehaviour {
 	{
 		mBoxCollider = GetComponent<BoxCollider2D>();
 		mRectTransform = GetComponent<RectTransform>();
-		//transform.Translate((new Vector3(1, 0, 0))*Time.deltaTime);
-		
+		positionInitial = mRectTransform.position;
+		//velocity.y = -50;
+
 	}
 
 	// Update is called once per frame
@@ -107,10 +109,6 @@ public class ControllerSeb : MonoBehaviour {
 
 		HandleMovement();
 
-		if(!isCollidingDown)
-		{
-			mRectTransform.Rotate(-transform.eulerAngles);
-		}
 	}
 
 	void LateUpdate()
@@ -122,12 +120,26 @@ public class ControllerSeb : MonoBehaviour {
 		if(isCollidingRight)
 		{
 			collidedRight = true;
-			transform.Translate(new Vector2(distanceToRightCollide, velocity.y * Time.deltaTime));
+			if (Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) > 0.1)
+			{
+				transform.Translate(new Vector2(distanceToRightCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.deltaTime));
+			}
+			else
+			{
+				transform.Translate(new Vector2(distanceToRightCollide, velocity.y * Time.deltaTime));
+			}
 		}
 		else if(isCollidingLeft)
 		{
 			collidedLeft = true; ;
-			transform.Translate(new Vector2(-distanceToLeftCollide, velocity.y * Time.deltaTime));
+			if (Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) > 0.1)
+			{
+				transform.Translate(new Vector2(-distanceToLeftCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.deltaTime));
+			}
+			else
+			{
+				transform.Translate(new Vector2(-distanceToLeftCollide, velocity.y * Time.deltaTime));
+			}
 		}
 		else if (isCollidingUp)
 		{
@@ -140,7 +152,15 @@ public class ControllerSeb : MonoBehaviour {
 			isWallJumpingRight = false;
 			frameNumber = 0;
 			buttonJumpDownCounter = 0;
-			transform.Translate(new Vector2(velocity.x * Time.deltaTime, -distanceToDownCollide * Mathf.Sin(transform.eulerAngles.z)));
+			//Debug.Log(Mathf.Sin(transform.eulerAngles.z));
+			if(Mathf.Abs(Mathf.Cos(transform.eulerAngles.z)) > 0.1)
+			{
+				transform.Translate(new Vector2(velocity.x * Time.deltaTime, -distanceToDownCollide * Mathf.Abs(Mathf.Cos(transform.eulerAngles.z))));
+			}
+			else
+			{
+				transform.Translate(new Vector2(velocity.x * Time.deltaTime, -distanceToDownCollide));
+			}
 		}
 		else
 		{
@@ -282,7 +302,16 @@ public class ControllerSeb : MonoBehaviour {
 				{
 					isCollidingDown = true;					
 					RayCollisionInfos[i].collider.GetComponent<ColliderScript>().ColliderEffect();
-					mRectTransform.rotation = RayCollisionInfos[i].collider.GetComponent<Transform>().rotation;
+					mRectTransform.rotation = RayCollisionInfos[i].collider.transform.rotation;
+					/*
+					float platformAngle = RayCollisionInfos[i].collider.GetComponent<Transform>().eulerAngles.z;
+					mRectTransform.RotateAround(
+						new Vector3(distanceToDownCollide * Mathf.Sin(platformAngle), distanceToDownCollide * Mathf.Cos(platformAngle), RayCollisionInfos[i].collider.GetComponent<Transform>().position.z),
+						new Vector3(0, 0, 1),
+						platformAngle
+						);
+					*/
+					//Debug.Log(Mathf.Abs(Mathf.Cos(transform.eulerAngles.z)));
 					Debug.DrawRay(origin, down, Color.red);
 				}
 			}
@@ -330,6 +359,7 @@ public class ControllerSeb : MonoBehaviour {
 					if (!RayCollisionInfos[i].collider.GetComponent<ColliderScript>().isCrossableFromDown)
 					{
 						isCollidingUp = true;
+						mRectTransform.rotation = RayCollisionInfos[i].collider.transform.rotation;
 						Debug.DrawRay(origin, up2, Color.red);
 					}
 					
@@ -373,6 +403,7 @@ public class ControllerSeb : MonoBehaviour {
 				if (RayCollisionInfos[i].collider != null && distanceToRightCollide < colliderMarge)
 				{
 					isCollidingRight = true;
+					mRectTransform.Rotate(-transform.eulerAngles);
 					Debug.DrawRay(origin, right2, Color.red);
 					if (isJumping)
 					{
@@ -418,6 +449,7 @@ public class ControllerSeb : MonoBehaviour {
 				if (RayCollisionInfos[i].collider != null && distanceToLeftCollide < colliderMarge)
 				{
 					isCollidingLeft = true;
+					mRectTransform.Rotate(-transform.eulerAngles);
 					Debug.DrawRay(origin, left, Color.red);
 					if (isJumping)
 					{
@@ -515,5 +547,16 @@ public class ControllerSeb : MonoBehaviour {
 		velocity.y /= velocityYMultiplicator;
 		velocityXMultiplicator = 1f;
 		velocityYMultiplicator = 1f;
+	}
+
+	private void Dead()
+	{
+		velocity = new Vector2(0, 0);
+		mRectTransform.position = positionInitial;
+	}
+
+	private void Jump()
+	{
+		velocity.y = jumpVelocity;
 	}
 }
