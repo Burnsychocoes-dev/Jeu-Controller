@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlateformeMovingScript : MonoBehaviour {
+	public bool active = true;
 	public float delay = 0f;
 	public float speedX = 0f;
 	public float speedY = 0f;
@@ -18,7 +19,7 @@ public class PlateformeMovingScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if(timer>= delay)
+		if(timer>= delay && active)
 		{
 			if (Mathf.Abs(translateX) < maxTranslateX)
 			{
