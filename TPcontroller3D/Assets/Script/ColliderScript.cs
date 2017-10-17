@@ -41,6 +41,7 @@ public class ColliderScript : MonoBehaviour {
 				break;
 			case ColliderType.BOUNCING:
 				//Activer le jump du joueur
+				seb.Jump();
 				break;
 			case ColliderType.WATER:
 				seb.SetVelocityXMultiplicator(waterMultiplicator);
@@ -48,6 +49,7 @@ public class ColliderScript : MonoBehaviour {
 				break;
 			case ColliderType.LAVA:
 				//Mettre l'état mort au joueur -> on remet sa vitesse à 0 et on le tp aux coordonnées du début
+				seb.Dead();
 				break;
 		}
 		if (moveOnCollision)
