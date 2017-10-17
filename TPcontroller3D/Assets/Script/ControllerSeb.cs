@@ -36,6 +36,7 @@ public class ControllerSeb : MonoBehaviour {
 	public float jumpVelocity = 5f;
 	private float velocityXMultiplicator = 1f;
 	private float velocityYMultiplicator = 1f;
+	private Vector2 downContactPlatformVelocity;
 	private Vector3 positionInitial;
 
 	private RectTransform mRectTransform;
@@ -131,7 +132,7 @@ public class ControllerSeb : MonoBehaviour {
 		}
 		else if(isCollidingLeft)
 		{
-			collidedLeft = true; ;
+			collidedLeft = true;
 			if (Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) > 0.1)
 			{
 				transform.Translate(new Vector2(-distanceToLeftCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.deltaTime));
@@ -237,6 +238,7 @@ public class ControllerSeb : MonoBehaviour {
 			velocity.x = velocity.x - gravity * Mathf.Sin(angle);			
 		}
 		//velocity.x = inputX * speed;
+		velocity += downContactPlatformVelocity;
 	}
 
 	void HandleChangeColor()
@@ -303,6 +305,9 @@ public class ControllerSeb : MonoBehaviour {
 					isCollidingDown = true;					
 					RayCollisionInfos[i].collider.GetComponent<ColliderScript>().ColliderEffect();
 					mRectTransform.rotation = RayCollisionInfos[i].collider.transform.rotation;
+					//RayCollisionInfos[i].collider.GetComponent<ColliderScript>().ActiveMovement();
+					downContactPlatformVelocity = new Vector2(RayCollisionInfos[i].collider.GetComponent<PlateformeMovingScript>().speedX,
+															RayCollisionInfos[i].collider.GetComponent<PlateformeMovingScript>().speedY);
 					/*
 					float platformAngle = RayCollisionInfos[i].collider.GetComponent<Transform>().eulerAngles.z;
 					mRectTransform.RotateAround(
@@ -321,7 +326,7 @@ public class ControllerSeb : MonoBehaviour {
 
 	void HandleCollisionUp()
 	{
-		if(velocity.y > 0)
+		if(velocity.y >= 0)
 		{
 			Vector3[] vertices = new Vector3[4];
 			mRectTransform.GetWorldCorners(vertices);
@@ -549,13 +554,13 @@ public class ControllerSeb : MonoBehaviour {
 		velocityYMultiplicator = 1f;
 	}
 
-	private void Dead()
+	public void Dead()
 	{
 		velocity = new Vector2(0, 0);
 		mRectTransform.position = positionInitial;
 	}
 
-	private void Jump()
+	public void Jump()
 	{
 		velocity.y = jumpVelocity;
 	}
