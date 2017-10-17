@@ -20,6 +20,7 @@ public class ControllerSeb : MonoBehaviour {
 	private bool isCollidingRight = false; // Collision avec un mur à droite
 	private bool isCollidingLeft = false; // Collision avec un mur à gauche
 	private Vector2 velocity = Vector2.zero; // vitesse
+	bool jump = false;
 	private bool isJumping = false;
 	private bool doubleJump = false;
 	private bool buttonJumpDown = false;
@@ -81,7 +82,7 @@ public class ControllerSeb : MonoBehaviour {
 		}
 		CalculateVelocity(inputX, inputY, buttonA, buttonJumpDown);
 		buttonJumpDown = Input.GetButtonDown("Jump") || Input.GetButtonDown("buttonA");
-		bool jump = false;
+		jump = false;
 		if(buttonA || inputY > 0)
 		{
 			jump = true;
@@ -562,6 +563,7 @@ public class ControllerSeb : MonoBehaviour {
 
 	public void Jump()
 	{
+		jump = true;
 		velocity.y = jumpVelocity;
 	}
 }
