@@ -59,4 +59,13 @@ public class ColliderScript : MonoBehaviour {
 			
 
 	}
+    
+    public void IsLava()
+    {
+        ControllerSeb seb = GameObject.Find("Seb").GetComponent<ControllerSeb>();
+        if(colliderType == ColliderType.LAVA)
+        {
+            seb.Dead();
+        }
+    }
 }

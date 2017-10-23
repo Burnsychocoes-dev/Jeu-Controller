@@ -426,7 +426,8 @@ public class ControllerSeb : MonoBehaviour {
 				//Gestion de collision d'un rayon
 				if (RayCollisionInfos[i].collider != null && distanceToUpCollide < colliderMarge)
 				{
-					if (!RayCollisionInfos[i].collider.GetComponent<ColliderScript>().isCrossableFromDown)
+                    RayCollisionInfos[i].collider.GetComponent<ColliderScript>().IsLava();
+                    if (!RayCollisionInfos[i].collider.GetComponent<ColliderScript>().isCrossableFromDown)
 					{
 						isCollidingUp = true;
 						mRectTransform.rotation = RayCollisionInfos[i].collider.transform.rotation;
@@ -472,7 +473,8 @@ public class ControllerSeb : MonoBehaviour {
 				//if we hit sth
 				if (RayCollisionInfos[i].collider != null && distanceToRightCollide < colliderMarge)
 				{
-					isCollidingRight = true;
+                    RayCollisionInfos[i].collider.GetComponent<ColliderScript>().IsLava();
+                    isCollidingRight = true;
 					mRectTransform.Rotate(-transform.eulerAngles);
 					Debug.DrawRay(origin, right2, Color.red);
 					if (isJumping)
@@ -518,7 +520,8 @@ public class ControllerSeb : MonoBehaviour {
 				//if we hit sth
 				if (RayCollisionInfos[i].collider != null && distanceToLeftCollide < colliderMarge)
 				{
-					isCollidingLeft = true;
+                    RayCollisionInfos[i].collider.GetComponent<ColliderScript>().IsLava();
+                    isCollidingLeft = true;
 					mRectTransform.Rotate(-transform.eulerAngles);
 					Debug.DrawRay(origin, left, Color.red);
 					if (isJumping)
