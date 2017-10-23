@@ -43,6 +43,7 @@ public class ControllerSeb : MonoBehaviour {
 	private int collidedDownCounter = 0;
 	private bool collidingAMovingPlatform = false;
 	private Vector2 downContactPlatformVelocity;
+    //private float downContactPlatformVX;
 	private Vector3 positionInitial;
 
 	private RectTransform mRectTransform;
@@ -69,13 +70,13 @@ public class ControllerSeb : MonoBehaviour {
 
 	}
 
-	// Update is called once per frame
-	void Update()
-	{
-		
-	}
+    // Update is called once per frame
+    void Update()
+    {
 
-	private void FixedUpdate()
+    }
+
+    private void FixedUpdate()
 	{
 		bool buttonA = Input.GetButton("buttonA") || Input.GetButton("Jump");
 		float inputX = Input.GetAxis("HorizontalStickGauche") + Input.GetAxis("Horizontal") + Input.GetAxis("HorizontalCroix");
@@ -101,8 +102,13 @@ public class ControllerSeb : MonoBehaviour {
 		HandleCollisionDown();
 
 		MultiplyVelocity();
-		velocity.x += downContactPlatformVelocity.x;		
-		velocity.y += downContactPlatformVelocity.y;
+        if (!isCollidingDown)
+        {
+            downContactPlatformVelocity.x = 0;
+            downContactPlatformVelocity.y = 0;
+        }
+		//velocity.x += downContactPlatformVelocity.x;		
+		//velocity.y += downContactPlatformVelocity.y;
 		//il faut aussi annuler la gravité
 		
 		HandleCollisionUp();
@@ -133,7 +139,7 @@ public class ControllerSeb : MonoBehaviour {
 				if (Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) > 0.1)
 				{
 					transform.Translate(new Vector2(distanceToRightCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.deltaTime));
-					collidedRightCounter++;
+					
 				}
 				else
 				{
@@ -156,13 +162,14 @@ public class ControllerSeb : MonoBehaviour {
 				if (Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) > 0.1)
 				{
 					transform.Translate(new Vector2(-distanceToLeftCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.deltaTime));
-					collidedLeftCounter++;
+					
 				}
 				else
 				{
 					transform.Translate(new Vector2(-distanceToLeftCollide, velocity.y * Time.deltaTime));
 				}
-			}
+                collidedLeftCounter++;
+            }
 			
 		}
 		else
@@ -176,27 +183,44 @@ public class ControllerSeb : MonoBehaviour {
 		}
 		if (isCollidingDown)
 		{
-			collidedDownCounter++;
 			doubleJump = false;
 			isWallJumpingLeft = false;
 			isWallJumpingRight = false;
 			frameNumber = 0;
 			buttonJumpDownCounter = 0;
+            float antiGravity = 0;
 			//Debug.Log(Mathf.Sin(transform.eulerAngles.z));
-			//transform.Translate(downContactPlatformVelocity * Time.fixedDeltaTime);
-			//transform.Translate(translate);
-			if (Mathf.Abs(Mathf.Cos(transform.eulerAngles.z)) > 0.1)
-			{
-				transform.Translate(new Vector2(velocity.x * Time.deltaTime, -distanceToDownCollide * Mathf.Abs(Mathf.Cos(transform.eulerAngles.z))));
-			}
-			else
-			{
-				transform.Translate(new Vector2(velocity.x * Time.deltaTime, -distanceToDownCollide));
-			}
+			
+            if (downContactPlatformVelocity.y > 0)
+            {
+                antiGravity = gravity * Time.fixedDeltaTime;
+            }
+            transform.Translate(downContactPlatformVelocity * Time.fixedDeltaTime + new Vector2(0,antiGravity));
+
+            //correction
+            if (collidedDownCounter < 2)
+            {
+                //transform.Translate(translate);
+                if (Mathf.Abs(Mathf.Cos(transform.eulerAngles.z)) > 0.1)
+                {
+                    transform.Translate(new Vector2(velocity.x * Time.deltaTime, -distanceToDownCollide * Mathf.Abs(Mathf.Cos(transform.eulerAngles.z)) ));
+                }
+                else
+                {
+                    transform.Translate(new Vector2(velocity.x * Time.deltaTime, -distanceToDownCollide ));
+                }
+                collidedDownCounter++;
+            }
+            else
+            {
+                transform.Translate(new Vector2(velocity.x * Time.deltaTime, 0));
+            }
+			
 
 		}
 		else
 		{
+            collidedDownCounter = 0;
 			collidingAMovingPlatform = false;
 		}		
 		if(!isCollidingDown && !isCollidingLeft && !isCollidingRight && !isCollidingUp)
@@ -216,6 +240,7 @@ public class ControllerSeb : MonoBehaviour {
 		{
 			velocity.x = inputX * speed * Mathf.Cos(angle);
 		}
+        //si on jump
 		if (inputY > 0 || jump)
 		{
 			if(!isJumping)
@@ -342,6 +367,7 @@ public class ControllerSeb : MonoBehaviour {
 					//RayCollisionInfos[i].collider.GetComponent<ColliderScript>().ActiveMovement();
 					downContactPlatformVelocity = new Vector2(RayCollisionInfos[i].collider.GetComponent<PlateformeMovingScript>().speedX,
 															RayCollisionInfos[i].collider.GetComponent<PlateformeMovingScript>().speedY);
+                    //downContactPlatformVX = RayCollisionInfos[i].collider.GetComponent<PlateformeMovingScript>().speedXTest;
 					if(downContactPlatformVelocity.y != 0)
 					{
 						collidingAMovingPlatform = true;

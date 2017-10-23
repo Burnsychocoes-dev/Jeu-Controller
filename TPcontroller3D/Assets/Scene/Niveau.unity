@@ -450,6 +450,7 @@ MonoBehaviour:
   maxTranslateY: 0
   translateX: 0
   translateY: 0
+  translate: {x: 0, y: 0, z: 0}
 --- !u!1 &175889560 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1246988542050030, guid: ea17a8028810dcc49b76858b9d452c2a,
@@ -479,6 +480,7 @@ MonoBehaviour:
   maxTranslateY: 0
   translateX: 0
   translateY: 0
+  translate: {x: 0, y: 0, z: 0}
 --- !u!1001 &265926853
 Prefab:
   m_ObjectHideFlags: 0
@@ -900,6 +902,7 @@ MonoBehaviour:
   maxTranslateY: 0
   translateX: 0
   translateY: 0
+  translate: {x: 0, y: 0, z: 0}
 --- !u!1 &726401662 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1392182335234400, guid: aa5727e6af5d4e04f866c9eb64284d40,
@@ -924,6 +927,7 @@ MonoBehaviour:
   maxTranslateY: 0
   translateX: 0
   translateY: 0
+  translate: {x: 0, y: 0, z: 0}
 --- !u!4 &817262464 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4206134902802428, guid: 8b986bcb164f73d45a3eba46712d0953,
@@ -1051,6 +1055,7 @@ MonoBehaviour:
   maxTranslateY: 0
   translateX: 0
   translateY: 0
+  translate: {x: 0, y: 0, z: 0}
 --- !u!1001 &1004381631
 Prefab:
   m_ObjectHideFlags: 0
@@ -1181,6 +1186,7 @@ MonoBehaviour:
   maxTranslateY: 0
   translateX: 0
   translateY: 0
+  translate: {x: 0, y: 0, z: 0}
 --- !u!1001 &1100432123
 Prefab:
   m_ObjectHideFlags: 0
@@ -1723,6 +1729,7 @@ MonoBehaviour:
   maxTranslateY: 0
   translateX: 0
   translateY: 0
+  translate: {x: 0, y: 0, z: 0}
 --- !u!1001 &1457714331
 Prefab:
   m_ObjectHideFlags: 0
@@ -1886,12 +1893,12 @@ Prefab:
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: 13.33
+      value: -17.24
       objectReference: {fileID: 0}
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 7.89
+      value: -6.25
       objectReference: {fileID: 0}
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
@@ -1970,6 +1977,7 @@ MonoBehaviour:
   maxTranslateY: 0
   translateX: 0
   translateY: 0
+  translate: {x: 0, y: 0, z: 0}
 --- !u!4 &1662433654 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4888404501685580, guid: 98731f8362736f54981f623a8b01225a,
@@ -2339,6 +2347,7 @@ MonoBehaviour:
   maxTranslateY: 0
   translateX: 0
   translateY: 0
+  translate: {x: 0, y: 0, z: 0}
 --- !u!1001 &2117588745
 Prefab:
   m_ObjectHideFlags: 0
@@ -2439,3 +2448,4 @@ MonoBehaviour:
   maxTranslateY: 0
   translateX: 0
   translateY: 0
+  translate: {x: 0, y: 0, z: 0}

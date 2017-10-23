@@ -13,9 +13,10 @@ public class PlateformeMovingScript : MonoBehaviour {
 	public float translateY = 0f;
 	public Vector3 translate;
 	private float timer = 0f;
+    //public float speedXTest = 0f;
 	// Use this for initialization
 	void Start () {
-		
+        //speedXTest = speedX * Time.fixedDeltaTime;
 	}
 	
 	// Update is called once per frame
@@ -24,28 +25,29 @@ public class PlateformeMovingScript : MonoBehaviour {
 		{
 			if (Mathf.Abs(translateX) < maxTranslateX)
 			{
-				translateX += speedX * Time.deltaTime;
+				translateX += speedX * Time.fixedDeltaTime;
 			}
 			else
 			{
 				translateX = 0;
 				speedX *= -1;
-			}
+                //speedXTest *= -1;
+            }
 			if (Mathf.Abs(translateY) < maxTranslateY)
 			{
-				translateY += speedY * Time.deltaTime;
+				translateY += speedY * Time.fixedDeltaTime;
 			}
 			else
 			{
 				translateY = 0;
 				speedY *= -1;
 			}
-			translate = new Vector3(speedX * Time.deltaTime, speedY * Time.deltaTime, 0);
-			transform.Translate(speedX * Time.deltaTime, speedY * Time.deltaTime, 0);
+			translate = new Vector3(speedX * Time.fixedDeltaTime, speedY * Time.fixedDeltaTime, 0);
+			transform.Translate(speedX * Time.fixedDeltaTime, speedY * Time.fixedDeltaTime, 0);
 		}
 		else
 		{
-			timer += Time.deltaTime;
+			timer += Time.fixedDeltaTime;
 		}
 		
 	}
