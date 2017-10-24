@@ -74,12 +74,12 @@ public class ControllerSeb : MonoBehaviour {
 	}
 
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
 
     }
 
-    private void Update()
+    private void FixedUpdate()
 	{
 		bool buttonA = Input.GetButton("buttonA") || Input.GetButton("Jump");
 		float inputX = Input.GetAxis("HorizontalStickGauche") + Input.GetAxis("Horizontal") + Input.GetAxis("HorizontalCroix");
