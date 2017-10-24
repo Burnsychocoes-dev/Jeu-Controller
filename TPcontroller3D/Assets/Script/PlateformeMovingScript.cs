@@ -51,6 +51,6 @@ public class PlateformeMovingScript : MonoBehaviour {
 		{
 			timer += Time.fixedDeltaTime;
 		}
-        Debug.Log(Time.fixedDeltaTime);
+        //Debug.Log(Time.fixedDeltaTime);
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ControllerSeb : MonoBehaviour
+public class ControllerSeb1 : MonoBehaviour
 {
     // Use this for initialization
     public float speed = 0.1f;
@@ -50,7 +50,6 @@ public class ControllerSeb : MonoBehaviour
     private RectTransform mRectTransform;
     // Constant donnant le nbr de trait à créer pour la collision vertical
     private static int verticalRays = 4;
-    public float antiTranslate = 0.0035f;
 
     // Box collder
     private BoxCollider2D mBoxCollider;
@@ -192,20 +191,12 @@ public class ControllerSeb : MonoBehaviour
             buttonJumpDownCounter = 0;
             float antiGravity = 0;
             //Debug.Log(Mathf.Sin(transform.eulerAngles.z));
-            float correctionTranslate = 0;
+
             if (downContactPlatformVelocity.y > 0)
             {
                 antiGravity = gravity * Time.fixedDeltaTime;
             }
-            if (downContactPlatformVelocity.x > 0)
-            {
-                correctionTranslate = antiTranslate * Time.fixedDeltaTime;
-            }
-            if (downContactPlatformVelocity.x < 0)
-            {
-                correctionTranslate = -antiTranslate * Time.fixedDeltaTime;
-            }
-            transform.Translate(downContactPlatformVelocity * Time.fixedDeltaTime + new Vector2(correctionTranslate, antiGravity));
+            transform.Translate(downContactPlatformVelocity * Time.fixedDeltaTime + new Vector2(0, antiGravity));
 
             //correction
             if (collidedDownCounter < 2)
