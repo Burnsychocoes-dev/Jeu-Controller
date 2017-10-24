@@ -46,7 +46,7 @@ public class ControllerSeb : MonoBehaviour
     private Vector2 downContactPlatformVelocity;
     //private float downContactPlatformVX;
     private Vector3 positionInitial;
-
+    private bool alive = true;
     private RectTransform mRectTransform;
     // Constant donnant le nbr de trait à créer pour la collision vertical
     private static int verticalRays = 4;
@@ -75,11 +75,15 @@ public class ControllerSeb : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        
     }
 
     private void FixedUpdate()
     {
+        if (!alive)
+        {
+            Resurrection();
+        }
         bool buttonA = Input.GetButton("buttonA") || Input.GetButton("Jump");
         float inputX = Input.GetAxis("HorizontalStickGauche") + Input.GetAxis("Horizontal") + Input.GetAxis("HorizontalCroix");
         float inputY = Input.GetAxis("VerticalStickGauche") + Input.GetAxis("Vertical") + Input.GetAxis("VerticalCroix");
@@ -208,7 +212,7 @@ public class ControllerSeb : MonoBehaviour
             transform.Translate(downContactPlatformVelocity * Time.fixedDeltaTime + new Vector2(correctionTranslate, antiGravity));
 
             //correction
-            if (collidedDownCounter < 2)
+            if (collidedDownCounter < 1)
             {
                 //transform.Translate(translate);
                 if (Mathf.Abs(Mathf.Cos(transform.eulerAngles.z)) > 0.1)
@@ -372,11 +376,17 @@ public class ControllerSeb : MonoBehaviour
                 if (RayCollisionInfos[i].collider != null && distanceToDownCollide < colliderMarge)
                 {
                     isCollidingDown = true;
+                    RayCollisionInfos[i].collider.GetComponent<ColliderScript>().IsCheckPoint();
+                    RayCollisionInfos[i].collider.GetComponent<ColliderScript>().TriggerOnCollision();
                     RayCollisionInfos[i].collider.GetComponent<ColliderScript>().ColliderEffect();
                     mRectTransform.rotation = RayCollisionInfos[i].collider.transform.rotation;
                     //RayCollisionInfos[i].collider.GetComponent<ColliderScript>().ActiveMovement();
                     downContactPlatformVelocity = new Vector2(RayCollisionInfos[i].collider.GetComponent<PlateformeMovingScript>().speedX,
                                                             RayCollisionInfos[i].collider.GetComponent<PlateformeMovingScript>().speedY);
+                    if(downContactPlatformVelocity.y < 0)
+                    {
+                        downContactPlatformVelocity.y = 0;
+                    }
                     //downContactPlatformVX = RayCollisionInfos[i].collider.GetComponent<PlateformeMovingScript>().speedXTest;
                     if (downContactPlatformVelocity.y != 0)
                     {
@@ -637,12 +647,25 @@ public class ControllerSeb : MonoBehaviour
     public void Dead()
     {
         velocity = new Vector2(0, 0);
+        alive = false;
+        
+    }
+
+    public void Resurrection()
+    {
         mRectTransform.position = positionInitial;
+        alive = true;
     }
 
     public void Jump()
     {
         jump = true;
         velocity.y = jumpVelocity;
+    }
+
+    public void CheckPointPosition()
+    {
+        positionInitial.x = transform.position.x;
+        positionInitial.y = transform.position.y;
     }
 }

@@ -9,6 +9,9 @@ public class ColliderScript : MonoBehaviour {
 	public float iceMultiplicator = 3f;
 	//public float bouncingMultiplicator = 1f;
 	public float waterMultiplicator = 0.66f;
+    [SerializeField]
+    private bool isCheckPoint = false;
+    
 	public enum ColliderType
 	{
 		NORMAL,
@@ -22,8 +25,8 @@ public class ColliderScript : MonoBehaviour {
 
 	[SerializeField]
 	private ColliderType colliderType;
-	
-	public void ColliderEffect()
+    public GameObject[] trigger;
+    public void ColliderEffect()
 	{
 		ControllerSeb seb = GameObject.Find("Seb").GetComponent<ControllerSeb>();
 		
@@ -66,6 +69,25 @@ public class ColliderScript : MonoBehaviour {
         if(colliderType == ColliderType.LAVA)
         {
             seb.Dead();
+        }
+    }
+
+    public void IsCheckPoint()
+    {
+        if (isCheckPoint)
+        {
+            isCheckPoint = false;
+            ControllerSeb seb = GameObject.Find("Seb").GetComponent<ControllerSeb>();
+            seb.CheckPointPosition();
+            
+        }
+    }
+
+    public void TriggerOnCollision()
+    {
+       foreach(GameObject obj in trigger)
+        {
+            obj.GetComponent<PlateformeMovingScript>().active = true;
         }
     }
 }

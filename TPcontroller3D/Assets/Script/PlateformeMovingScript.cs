@@ -14,6 +14,7 @@ public class PlateformeMovingScript : MonoBehaviour {
     public float angularSpeed = 0f;
 	public Vector3 translate;
 	private float timer = 0f;
+    public bool isLooping = true;
     //public float speedXTest = 0f;
 	// Use this for initialization
 	void Start () {
@@ -30,8 +31,16 @@ public class PlateformeMovingScript : MonoBehaviour {
 			}
 			else
 			{
-				translateX = 0;
-				speedX *= -1;
+                if (isLooping)
+                {
+                    translateX = 0;
+                    speedX *= -1;
+                }
+                else
+                {
+                    speedX = 0;
+                }
+				
                 //speedXTest *= -1;
             }
 			if (Mathf.Abs(translateY) < maxTranslateY)
@@ -40,14 +49,22 @@ public class PlateformeMovingScript : MonoBehaviour {
 			}
 			else
 			{
-				translateY = 0;
-				speedY *= -1;
+                if (isLooping)
+                {
+                    translateY = 0;
+                    speedY *= -1;
+                }
+                else
+                {
+                    speedY = 0;
+                }
+				
 			}
             transform.Rotate(new Vector3(0, 0, angularSpeed));
 			translate = new Vector3(speedX * Time.fixedDeltaTime, speedY * Time.fixedDeltaTime, 0);
 			transform.Translate(translate);
 		}
-		else
+		else if(active)
 		{
 			timer += Time.fixedDeltaTime;
 		}
