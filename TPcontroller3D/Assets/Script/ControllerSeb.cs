@@ -61,7 +61,10 @@ public class ControllerSeb : MonoBehaviour {
 	// Conteneur d'info des collisions 
 	private RaycastHit2D[] RayCollisionInfos;
 
-	void Start ()
+
+    public float antiTranslate = 0.0035f;
+
+    void Start ()
 	{
 		mBoxCollider = GetComponent<BoxCollider2D>();
 		mRectTransform = GetComponent<RectTransform>();
@@ -71,12 +74,12 @@ public class ControllerSeb : MonoBehaviour {
 	}
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
 
     }
 
-    private void FixedUpdate()
+    private void Update()
 	{
 		bool buttonA = Input.GetButton("buttonA") || Input.GetButton("Jump");
 		float inputX = Input.GetAxis("HorizontalStickGauche") + Input.GetAxis("Horizontal") + Input.GetAxis("HorizontalCroix");
@@ -96,7 +99,7 @@ public class ControllerSeb : MonoBehaviour {
 		
 
 		//On regarde s'il y a des collisions à venir avec la velocité souhaitée
-		InitBox();
+		//InitBox();
 		
 			
 		HandleCollisionDown();
@@ -138,12 +141,12 @@ public class ControllerSeb : MonoBehaviour {
 			{
 				if (Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) > 0.1)
 				{
-					transform.Translate(new Vector2(distanceToRightCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.deltaTime));
+					transform.Translate(new Vector2(distanceToRightCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.fixedDeltaTime));
 					
 				}
 				else
 				{
-					transform.Translate(new Vector2(distanceToRightCollide, velocity.y * Time.deltaTime));
+					transform.Translate(new Vector2(distanceToRightCollide, velocity.y * Time.fixedDeltaTime));
 				}
 				collidedRightCounter++;
 			}
@@ -161,12 +164,12 @@ public class ControllerSeb : MonoBehaviour {
 			{
 				if (Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) > 0.1)
 				{
-					transform.Translate(new Vector2(-distanceToLeftCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.deltaTime));
+					transform.Translate(new Vector2(-distanceToLeftCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.fixedDeltaTime));
 					
 				}
 				else
 				{
-					transform.Translate(new Vector2(-distanceToLeftCollide, velocity.y * Time.deltaTime));
+					transform.Translate(new Vector2(-distanceToLeftCollide, velocity.y * Time.fixedDeltaTime));
 				}
                 collidedLeftCounter++;
             }
@@ -179,7 +182,7 @@ public class ControllerSeb : MonoBehaviour {
 		}
 		if (isCollidingUp)
 		{
-			transform.Translate(new Vector2(velocity.x * Time.deltaTime, distanceToUpCollide));
+			transform.Translate(new Vector2(velocity.x * Time.fixedDeltaTime, distanceToUpCollide));
 		}
 		if (isCollidingDown)
 		{
@@ -189,13 +192,22 @@ public class ControllerSeb : MonoBehaviour {
 			frameNumber = 0;
 			buttonJumpDownCounter = 0;
             float antiGravity = 0;
+            float correctionTranslate = 0;
 			//Debug.Log(Mathf.Sin(transform.eulerAngles.z));
 			
             if (downContactPlatformVelocity.y > 0)
             {
                 antiGravity = gravity * Time.fixedDeltaTime;
             }
-            transform.Translate(downContactPlatformVelocity * Time.fixedDeltaTime + new Vector2(0,antiGravity));
+            if(downContactPlatformVelocity.x > 0)
+            {
+                correctionTranslate = antiTranslate;
+            }
+            if(downContactPlatformVelocity.x < 0)
+            {
+                correctionTranslate = -antiTranslate;
+            }
+            transform.Translate(translate + new Vector3(correctionTranslate, antiGravity,0));
 
             //correction
             if (collidedDownCounter < 2)
@@ -203,17 +215,17 @@ public class ControllerSeb : MonoBehaviour {
                 //transform.Translate(translate);
                 if (Mathf.Abs(Mathf.Cos(transform.eulerAngles.z)) > 0.1)
                 {
-                    transform.Translate(new Vector2(velocity.x * Time.deltaTime, -distanceToDownCollide * Mathf.Abs(Mathf.Cos(transform.eulerAngles.z)) ));
+                    transform.Translate(new Vector2(velocity.x * Time.fixedDeltaTime, -distanceToDownCollide * Mathf.Abs(Mathf.Cos(transform.eulerAngles.z)) ));
                 }
                 else
                 {
-                    transform.Translate(new Vector2(velocity.x * Time.deltaTime, -distanceToDownCollide ));
+                    transform.Translate(new Vector2(velocity.x * Time.fixedDeltaTime, -distanceToDownCollide ));
                 }
                 collidedDownCounter++;
             }
             else
             {
-                transform.Translate(new Vector2(velocity.x * Time.deltaTime, 0));
+                transform.Translate(new Vector2(velocity.x * Time.fixedDeltaTime, 0));
             }
 			
 
@@ -225,12 +237,13 @@ public class ControllerSeb : MonoBehaviour {
 		}		
 		if(!isCollidingDown && !isCollidingLeft && !isCollidingRight && !isCollidingUp)
 		{						
-			transform.Translate(velocity * Time.deltaTime);
+			transform.Translate(velocity * Time.fixedDeltaTime);
 		}		
 		
 		//Debug.Log("Late Update");
 		//Debug.Log(doubleJump);
 		InitCollisionBool();
+        //Debug.Log(Time.fixedDeltaTime);
 	}
 
 	void CalculateVelocity(float inputX, float inputY, bool jump, bool buttonJumpDown)
@@ -343,7 +356,7 @@ public class ControllerSeb : MonoBehaviour {
 			RayCollisionInfos = new RaycastHit2D[verticalRays];
 
 			//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
-			float distance = Mathf.Abs(velocity.y * Time.deltaTime + (velocity.y - gravity) * Time.deltaTime);
+			float distance = Mathf.Abs(velocity.y * Time.deltaTime + (velocity.y - gravity) * Time.fixedDeltaTime);
 			//Debug.Log("distance down");
 			//Debug.Log(distance);
 			for (int i = 0; i < verticalRays; i++)
@@ -383,6 +396,7 @@ public class ControllerSeb : MonoBehaviour {
 					*/
 					//Debug.Log(Mathf.Abs(Mathf.Cos(transform.eulerAngles.z)));
 					Debug.DrawRay(origin, down, Color.red);
+                    //Debug.Log(new Vector2(RayCollisionInfos[i].collider.GetComponent<PlateformeMovingScript>().speedX, RayCollisionInfos[i].collider.GetComponent<PlateformeMovingScript>().speedY));
 				}
 			}
 		}
@@ -408,7 +422,7 @@ public class ControllerSeb : MonoBehaviour {
 			RayCollisionInfos = new RaycastHit2D[verticalRays];
 
 			//On prends notre distance à parcourir. En l'occurence la motié de la box + la distance parcourue avant la dernière frame
-			float distance = Mathf.Abs(velocity.y * Time.deltaTime);
+			float distance = Mathf.Abs(velocity.y * Time.fixedDeltaTime);
 
 
 			for (int i = 0; i < verticalRays; i++)

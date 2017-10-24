@@ -43,12 +43,12 @@ public class PlateformeMovingScript : MonoBehaviour {
 				speedY *= -1;
 			}
 			translate = new Vector3(speedX * Time.fixedDeltaTime, speedY * Time.fixedDeltaTime, 0);
-			transform.Translate(speedX * Time.fixedDeltaTime, speedY * Time.fixedDeltaTime, 0);
+			transform.Translate(translate);
 		}
 		else
 		{
 			timer += Time.fixedDeltaTime;
 		}
-		
-	}
+        Debug.Log(Time.fixedDeltaTime);
+    }
 }
