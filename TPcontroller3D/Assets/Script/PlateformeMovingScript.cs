@@ -11,6 +11,7 @@ public class PlateformeMovingScript : MonoBehaviour {
 	public float maxTranslateY = 0f;
 	public float translateX = 0f;
 	public float translateY = 0f;
+    public float angularSpeed = 0f;
 	public Vector3 translate;
 	private float timer = 0f;
     //public float speedXTest = 0f;
@@ -42,6 +43,7 @@ public class PlateformeMovingScript : MonoBehaviour {
 				translateY = 0;
 				speedY *= -1;
 			}
+            transform.Rotate(new Vector3(0, 0, angularSpeed));
 			translate = new Vector3(speedX * Time.fixedDeltaTime, speedY * Time.fixedDeltaTime, 0);
 			transform.Translate(translate);
 		}
