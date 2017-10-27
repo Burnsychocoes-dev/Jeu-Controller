@@ -52,6 +52,7 @@ public class ControllerSeb : MonoBehaviour
     private static int verticalRays = 4;
     public float antiTranslate = 0.0035f;
     public float collideSideOffset = 1e-06f;
+    public float translateActivationMarge = 0.1f;
 
     // Box collder
     private BoxCollider2D mBoxCollider;
@@ -87,14 +88,14 @@ public class ControllerSeb : MonoBehaviour
         }
         bool buttonA = Input.GetButton("buttonA") || Input.GetButton("Jump");
         float inputX = Input.GetAxis("HorizontalStickGauche") + Input.GetAxis("Horizontal") + Input.GetAxis("HorizontalCroix");
-        bool buttonX = Input.GetButton("HorizontalStickGauche")||Input.GetButton("Horizontal")||Input.GetButton("HorizontalCroix");
+        //bool buttonX = Input.GetButton("HorizontalStickGauche")||Input.GetButton("Horizontal")||Input.GetButton("HorizontalCroix");
         float inputY = Input.GetAxis("VerticalStickGauche") + Input.GetAxis("Vertical") + Input.GetAxis("VerticalCroix");
         //On calcule la velocité du mouvement souhaité par l'utilisateur
         if (buttonJumpDown)
         {
             buttonJumpDownCounter++;
         }
-        CalculateVelocity(inputX, inputY, buttonA, buttonJumpDown, buttonX);
+        CalculateVelocity(inputX, inputY, buttonA, buttonJumpDown);
         buttonJumpDown = Input.GetButtonDown("Jump") || Input.GetButtonDown("buttonA");
         jump = false;
         if (buttonA || inputY > 0)
@@ -249,10 +250,10 @@ public class ControllerSeb : MonoBehaviour
         InitCollisionBool();
     }
 
-    void CalculateVelocity(float inputX, float inputY, bool jump, bool buttonJumpDown, bool buttonX)
+    void CalculateVelocity(float inputX, float inputY, bool jump, bool buttonJumpDown)
     {
         float angle = transform.eulerAngles.z * Mathf.PI / 180;
-        if (buttonX)
+        if (Mathf.Abs(inputX) > translateActivationMarge)
         {
             if (!isWallJumpingLeft && !isWallJumpingRight && inputX>0)
             {
