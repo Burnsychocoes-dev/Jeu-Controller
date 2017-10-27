@@ -2187,11 +2187,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e8fe47e4f53ccc469881f5d44d2b3c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
+  speed: 0.1
   gravity: 1
   colliderMarge: 3
-  jumpVelocity: 11
-  antiTranslate: 0
+  jumpVelocity: 5
+  antiTranslate: 0.0035
 --- !u!1001 &1421300112
 Prefab:
   m_ObjectHideFlags: 0
@@ -2530,12 +2530,12 @@ Prefab:
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: -17.34
+      value: -3.23
       objectReference: {fileID: 0}
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: -5.95
+      value: 7.94
       objectReference: {fileID: 0}
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
@@ -2580,7 +2580,7 @@ Prefab:
     - target: {fileID: 114248812916657374, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
       propertyPath: antiTranslate
-      value: 0.1
+      value: 0.0118
       objectReference: {fileID: 0}
     - target: {fileID: 114248812916657374, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
