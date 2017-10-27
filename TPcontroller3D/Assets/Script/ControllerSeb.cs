@@ -51,6 +51,7 @@ public class ControllerSeb : MonoBehaviour
     // Constant donnant le nbr de trait à créer pour la collision vertical
     private static int verticalRays = 4;
     public float antiTranslate = 0.0035f;
+    public float collideSideOffset = 1e-06f;
 
     // Box collder
     private BoxCollider2D mBoxCollider;
@@ -86,13 +87,14 @@ public class ControllerSeb : MonoBehaviour
         }
         bool buttonA = Input.GetButton("buttonA") || Input.GetButton("Jump");
         float inputX = Input.GetAxis("HorizontalStickGauche") + Input.GetAxis("Horizontal") + Input.GetAxis("HorizontalCroix");
+        bool buttonX = Input.GetButton("HorizontalStickGauche")||Input.GetButton("Horizontal")||Input.GetButton("HorizontalCroix");
         float inputY = Input.GetAxis("VerticalStickGauche") + Input.GetAxis("Vertical") + Input.GetAxis("VerticalCroix");
         //On calcule la velocité du mouvement souhaité par l'utilisateur
         if (buttonJumpDown)
         {
             buttonJumpDownCounter++;
         }
-        CalculateVelocity(inputX, inputY, buttonA, buttonJumpDown);
+        CalculateVelocity(inputX, inputY, buttonA, buttonJumpDown, buttonX);
         buttonJumpDown = Input.GetButtonDown("Jump") || Input.GetButtonDown("buttonA");
         jump = false;
         if (buttonA || inputY > 0)
@@ -144,12 +146,12 @@ public class ControllerSeb : MonoBehaviour
             {
                 if (Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) > 0.1)
                 {
-                    transform.Translate(new Vector2(distanceToRightCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.deltaTime));
+                    transform.Translate(new Vector2(distanceToRightCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z))+collideSideOffset, velocity.y * Time.deltaTime));
 
                 }
                 else
                 {
-                    transform.Translate(new Vector2(distanceToRightCollide, velocity.y * Time.deltaTime));
+                    transform.Translate(new Vector2(distanceToRightCollide+collideSideOffset, velocity.y * Time.deltaTime));
                 }
                 collidedRightCounter++;
             }
@@ -167,12 +169,12 @@ public class ControllerSeb : MonoBehaviour
             {
                 if (Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) > 0.1)
                 {
-                    transform.Translate(new Vector2(-distanceToLeftCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.deltaTime));
+                    transform.Translate(new Vector2(-distanceToLeftCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z))-collideSideOffset, velocity.y * Time.deltaTime));
 
                 }
                 else
                 {
-                    transform.Translate(new Vector2(-distanceToLeftCollide, velocity.y * Time.deltaTime));
+                    transform.Translate(new Vector2(-distanceToLeftCollide-collideSideOffset, velocity.y * Time.deltaTime));
                 }
                 collidedLeftCounter++;
             }
@@ -247,13 +249,30 @@ public class ControllerSeb : MonoBehaviour
         InitCollisionBool();
     }
 
-    void CalculateVelocity(float inputX, float inputY, bool jump, bool buttonJumpDown)
+    void CalculateVelocity(float inputX, float inputY, bool jump, bool buttonJumpDown, bool buttonX)
     {
         float angle = transform.eulerAngles.z * Mathf.PI / 180;
-        if (!isWallJumpingLeft && !isWallJumpingRight)
+        if (buttonX)
         {
-            velocity.x = inputX * speed * Mathf.Cos(angle);
+            if (!isWallJumpingLeft && !isWallJumpingRight && inputX>0)
+            {
+                //velocity.x = inputX * speed * Mathf.Cos(angle);
+                velocity.x = speed * Mathf.Cos(angle);
+            }
+            else if (!isWallJumpingLeft && !isWallJumpingRight && inputX < 0)
+            {
+                velocity.x = -speed * Mathf.Cos(angle);
+            }
         }
+        else
+        {
+            if (!isWallJumpingLeft && !isWallJumpingRight)
+            {
+                velocity.x = 0;
+            }
+        }
+        
+        
         //si on jump
         if (inputY > 0 || jump)
         {
