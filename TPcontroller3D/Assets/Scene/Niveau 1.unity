@@ -2188,7 +2188,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 0.75
-  doubleJumpOffset: 0.00000001
   gravity: 1
   colliderMarge: 3
   jumpVelocity: 11
@@ -2531,12 +2530,12 @@ Prefab:
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: -3.3
+      value: -17.29
       objectReference: {fileID: 0}
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 8.1
+      value: -6.38
       objectReference: {fileID: 0}
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
