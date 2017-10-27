@@ -87,13 +87,14 @@ public class ControllerSeb : MonoBehaviour
         }
         bool buttonA = Input.GetButton("buttonA") || Input.GetButton("Jump");
         float inputX = Input.GetAxis("HorizontalStickGauche") + Input.GetAxis("Horizontal") + Input.GetAxis("HorizontalCroix");
+        bool buttonX = Input.GetButton("HorizontalStickGauche")||Input.GetButton("Horizontal")||Input.GetButton("HorizontalCroix");
         float inputY = Input.GetAxis("VerticalStickGauche") + Input.GetAxis("Vertical") + Input.GetAxis("VerticalCroix");
         //On calcule la velocité du mouvement souhaité par l'utilisateur
         if (buttonJumpDown)
         {
             buttonJumpDownCounter++;
         }
-        CalculateVelocity(inputX, inputY, buttonA, buttonJumpDown);
+        CalculateVelocity(inputX, inputY, buttonA, buttonJumpDown, buttonX);
         buttonJumpDown = Input.GetButtonDown("Jump") || Input.GetButtonDown("buttonA");
         jump = false;
         if (buttonA || inputY > 0)
@@ -248,21 +249,30 @@ public class ControllerSeb : MonoBehaviour
         InitCollisionBool();
     }
 
-    void CalculateVelocity(float inputX, float inputY, bool jump, bool buttonJumpDown)
+    void CalculateVelocity(float inputX, float inputY, bool jump, bool buttonJumpDown, bool buttonX)
     {
         float angle = transform.eulerAngles.z * Mathf.PI / 180;
-        if (!isWallJumpingLeft && !isWallJumpingRight)
+        if (buttonX)
         {
-            velocity.x = inputX * speed * Mathf.Cos(angle);
-            //velocity.x = speed * Mathf.Cos(angle);
+            if (!isWallJumpingLeft && !isWallJumpingRight && inputX>0)
+            {
+                //velocity.x = inputX * speed * Mathf.Cos(angle);
+                velocity.x = speed * Mathf.Cos(angle);
+            }
+            else if (!isWallJumpingLeft && !isWallJumpingRight && inputX < 0)
+            {
+                velocity.x = -speed * Mathf.Cos(angle);
+            }
         }
-        //else if (!isWallJumpingLeft && !isWallJumpingRight && inputX < 0)
-        //{
-        //    velocity.x = -speed * Mathf.Cos(angle);
-        //}else if(!isWallJumpingLeft && !isWallJumpingRight && inputX == 0)
-        //{
-        //    velocity.x = 0;
-        //}
+        else
+        {
+            if (!isWallJumpingLeft && !isWallJumpingRight)
+            {
+                velocity.x = 0;
+            }
+        }
+        
+        
         //si on jump
         if (inputY > 0 || jump)
         {
