@@ -13,7 +13,6 @@ public class ControllerSeb1 : MonoBehaviour
 	 * la il sera privé
 	*/
     private float offset = 0.08f;
-    public float doubleJumpOffset = 0.00000001f;
     private int frameNumber = 0;
     // Variables physiques
     public float gravity = 1f;
@@ -64,7 +63,7 @@ public class ControllerSeb1 : MonoBehaviour
     private RaycastHit2D[] RayCollisionInfos;
 
 
-    public float antiTranslate = 0.00015f;
+    public float antiTranslate = 0.0035f;
 
     void Start()
     {
@@ -143,12 +142,12 @@ public class ControllerSeb1 : MonoBehaviour
             {
                 if (Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) > 0.1)
                 {
-                    transform.Translate(new Vector2(distanceToRightCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) + doubleJumpOffset, velocity.y * Time.fixedDeltaTime));
+                    transform.Translate(new Vector2(distanceToRightCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.fixedDeltaTime));
 
                 }
                 else
                 {
-                    transform.Translate(new Vector2(distanceToRightCollide + doubleJumpOffset, velocity.y * Time.fixedDeltaTime));
+                    transform.Translate(new Vector2(distanceToRightCollide, velocity.y * Time.fixedDeltaTime));
                 }
                 collidedRightCounter++;
             }
@@ -166,12 +165,12 @@ public class ControllerSeb1 : MonoBehaviour
             {
                 if (Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) > 0.1)
                 {
-                    transform.Translate(new Vector2(-distanceToLeftCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)) - doubleJumpOffset, velocity.y * Time.fixedDeltaTime));
+                    transform.Translate(new Vector2(-distanceToLeftCollide * Mathf.Abs(Mathf.Sin(transform.eulerAngles.z)), velocity.y * Time.fixedDeltaTime));
 
                 }
                 else
                 {
-                    transform.Translate(new Vector2(-distanceToLeftCollide - doubleJumpOffset, velocity.y * Time.fixedDeltaTime));
+                    transform.Translate(new Vector2(-distanceToLeftCollide, velocity.y * Time.fixedDeltaTime));
                 }
                 collidedLeftCounter++;
             }
@@ -315,6 +314,31 @@ public class ControllerSeb1 : MonoBehaviour
         //velocity += downContactPlatformVelocity;
     }
 
+    void HandleChangeColor()
+    {
+
+        if (Input.GetButton("buttonA"))
+        {
+            GetComponent<Renderer>().material.color = Color.green;
+        }
+        else if (Input.GetButton("buttonB"))
+        {
+            GetComponent<Renderer>().material.color = Color.red;
+        }
+        else if (Input.GetButton("buttonX"))
+        {
+            GetComponent<Renderer>().material.color = Color.blue;
+        }
+        else if (Input.GetButton("buttonY"))
+        {
+            GetComponent<Renderer>().material.color = Color.yellow;
+        }
+        else
+        {
+            GetComponent<Renderer>().material.color = Color.white;
+        }
+
+    }
 
     void HandleCollisionDown()
     {
@@ -352,8 +376,6 @@ public class ControllerSeb1 : MonoBehaviour
                 if (RayCollisionInfos[i].collider != null && distanceToDownCollide < colliderMarge)
                 {
                     isCollidingDown = true;
-                    RayCollisionInfos[i].collider.GetComponent<ColliderScript>().IsCheckPoint();
-                    RayCollisionInfos[i].collider.GetComponent<ColliderScript>().TriggerOnCollision();
                     RayCollisionInfos[i].collider.GetComponent<ColliderScript>().ColliderEffect();
                     mRectTransform.rotation = RayCollisionInfos[i].collider.transform.rotation;
                     //RayCollisionInfos[i].collider.GetComponent<ColliderScript>().ActiveMovement();

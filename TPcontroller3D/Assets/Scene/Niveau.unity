@@ -2187,15 +2187,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e8fe47e4f53ccc469881f5d44d2b3c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-<<<<<<< HEAD
-  speed: 0.1
-=======
   speed: 0.75
->>>>>>> 75a91fc87be6e348101dd12244f36b0359bb07c4
   gravity: 1
   colliderMarge: 3
-  jumpVelocity: 5
-  antiTranslate: 0.0035
+  jumpVelocity: 11
+  antiTranslate: 0
 --- !u!1001 &1421300112
 Prefab:
   m_ObjectHideFlags: 0
@@ -2534,20 +2530,12 @@ Prefab:
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
       propertyPath: m_AnchoredPosition.x
-<<<<<<< HEAD
-      value: -3.23
-=======
       value: -17.29
->>>>>>> 75a91fc87be6e348101dd12244f36b0359bb07c4
       objectReference: {fileID: 0}
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-<<<<<<< HEAD
-      value: 7.94
-=======
       value: -6.38
->>>>>>> 75a91fc87be6e348101dd12244f36b0359bb07c4
       objectReference: {fileID: 0}
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
@@ -2592,7 +2580,7 @@ Prefab:
     - target: {fileID: 114248812916657374, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
       propertyPath: antiTranslate
-      value: 0.0118
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 114248812916657374, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
