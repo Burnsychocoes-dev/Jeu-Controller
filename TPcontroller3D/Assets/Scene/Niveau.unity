@@ -378,7 +378,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1246988542050030, guid: ea17a8028810dcc49b76858b9d452c2a, type: 2}
       propertyPath: m_Name
-      value: Mur bas (2)
+      value: Mur bas gris
       objectReference: {fileID: 0}
     - target: {fileID: 212965692760557692, guid: ea17a8028810dcc49b76858b9d452c2a,
         type: 2}
@@ -543,38 +543,11 @@ MonoBehaviour:
   angularSpeed: 0
   translate: {x: 0, y: 0, z: 0}
   isLooping: 1
---- !u!1 &175889560 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1246988542050030, guid: ea17a8028810dcc49b76858b9d452c2a,
-    type: 2}
-  m_PrefabInternal: {fileID: 1538081762}
 --- !u!4 &175889561 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4639148233863698, guid: ea17a8028810dcc49b76858b9d452c2a,
     type: 2}
   m_PrefabInternal: {fileID: 1538081762}
---- !u!114 &175889562
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 175889560}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a520dfbd7032be47a715561bc9a9626, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  active: 1
-  delay: 0
-  speedX: 0
-  speedY: 0
-  maxTranslateX: 0
-  maxTranslateY: 0
-  translateX: 0
-  translateY: 0
-  angularSpeed: 0
-  translate: {x: 0, y: 0, z: 0}
-  isLooping: 1
 --- !u!1001 &265926853
 Prefab:
   m_ObjectHideFlags: 0
@@ -1441,7 +1414,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1246988542050030, guid: ea17a8028810dcc49b76858b9d452c2a, type: 2}
       propertyPath: m_Name
-      value: Mur bas (1)
+      value: Mur gris
       objectReference: {fileID: 0}
     - target: {fileID: 212965692760557692, guid: ea17a8028810dcc49b76858b9d452c2a,
         type: 2}
@@ -2328,27 +2301,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 98731f8362736f54981f623a8b01225a, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &1384728779 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1638948541987876, guid: 0d91d045122ff574188f2d65f842e671,
-    type: 2}
-  m_PrefabInternal: {fileID: 1561447621}
---- !u!114 &1384728784
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1384728779}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e8fe47e4f53ccc469881f5d44d2b3c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 0.75
-  gravity: 1
-  colliderMarge: 3
-  jumpVelocity: 11
-  antiTranslate: 0
 --- !u!1001 &1421300112
 Prefab:
   m_ObjectHideFlags: 0
@@ -2647,12 +2599,12 @@ Prefab:
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
       propertyPath: m_LocalPosition.x
-      value: -3.2
+      value: -17.29
       objectReference: {fileID: 0}
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
       propertyPath: m_LocalPosition.y
-      value: 6.64
+      value: -6.38
       objectReference: {fileID: 0}
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
@@ -2687,12 +2639,12 @@ Prefab:
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
       propertyPath: m_AnchoredPosition.x
-      value: -3.2
+      value: -17.29
       objectReference: {fileID: 0}
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
       propertyPath: m_AnchoredPosition.y
-      value: 6.64
+      value: -6.38
       objectReference: {fileID: 0}
     - target: {fileID: 224858968643406916, guid: 0d91d045122ff574188f2d65f842e671,
         type: 2}
@@ -2749,7 +2701,8 @@ Prefab:
       propertyPath: collideSideOffset
       value: 0.000001
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 114201375775536712, guid: 0d91d045122ff574188f2d65f842e671, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 0d91d045122ff574188f2d65f842e671, type: 2}
   m_IsPrefabParent: 0
 --- !u!4 &1591031093 stripped
@@ -2762,33 +2715,6 @@ Transform:
   m_PrefabParentObject: {fileID: 4206134902802428, guid: 8b986bcb164f73d45a3eba46712d0953,
     type: 2}
   m_PrefabInternal: {fileID: 1834024689}
---- !u!1 &1662433650 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1122680244339886, guid: 98731f8362736f54981f623a8b01225a,
-    type: 2}
-  m_PrefabInternal: {fileID: 104392384}
---- !u!114 &1662433651
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1662433650}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a520dfbd7032be47a715561bc9a9626, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  active: 1
-  delay: 0
-  speedX: 0
-  speedY: 0
-  maxTranslateX: 0
-  maxTranslateY: 0
-  translateX: 0
-  translateY: 0
-  angularSpeed: 0
-  translate: {x: 0, y: 0, z: 0}
-  isLooping: 1
 --- !u!4 &1662433654 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4888404501685580, guid: 98731f8362736f54981f623a8b01225a,
@@ -3321,15 +3247,11 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4639148233863698, guid: ea17a8028810dcc49b76858b9d452c2a, type: 2}
       propertyPath: m_LocalPosition.x
-<<<<<<< HEAD:TPcontroller3D/Assets/Scene/Niveau.unity
       value: 7.44
-=======
-      value: 7.47
->>>>>>> d2ad2e39bc11c0879305e1779128e41e4feb01b4:TPcontroller3D/Assets/Scene/Niveau 1.unity
       objectReference: {fileID: 0}
     - target: {fileID: 4639148233863698, guid: ea17a8028810dcc49b76858b9d452c2a, type: 2}
       propertyPath: m_LocalPosition.y
-      value: -12.4
+      value: -12.57
       objectReference: {fileID: 0}
     - target: {fileID: 4639148233863698, guid: ea17a8028810dcc49b76858b9d452c2a, type: 2}
       propertyPath: m_LocalPosition.z
@@ -3376,15 +3298,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4639148233863698, guid: ea17a8028810dcc49b76858b9d452c2a, type: 2}
       propertyPath: m_LocalScale.y
-      value: 22.495903
+      value: 23.445442
       objectReference: {fileID: 0}
     - target: {fileID: 4639148233863698, guid: ea17a8028810dcc49b76858b9d452c2a, type: 2}
       propertyPath: m_LocalScale.x
-<<<<<<< HEAD:TPcontroller3D/Assets/Scene/Niveau.unity
       value: 41.59416
-=======
-      value: 41.6
->>>>>>> d2ad2e39bc11c0879305e1779128e41e4feb01b4:TPcontroller3D/Assets/Scene/Niveau 1.unity
       objectReference: {fileID: 0}
     - target: {fileID: 114429772795714336, guid: ea17a8028810dcc49b76858b9d452c2a,
         type: 2}
@@ -3420,10 +3338,6 @@ Prefab:
         type: 2}
       propertyPath: active
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4639148233863698, guid: ea17a8028810dcc49b76858b9d452c2a, type: 2}
-      propertyPath: m_LocalScale.z
-      value: 0.95949996
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ea17a8028810dcc49b76858b9d452c2a, type: 2}
@@ -3664,38 +3578,11 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: ea17a8028810dcc49b76858b9d452c2a, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &2068365436 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1122680244339886, guid: 98731f8362736f54981f623a8b01225a,
-    type: 2}
-  m_PrefabInternal: {fileID: 51359356}
 --- !u!4 &2068365437 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4888404501685580, guid: 98731f8362736f54981f623a8b01225a,
     type: 2}
   m_PrefabInternal: {fileID: 51359356}
---- !u!114 &2068365438
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2068365436}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3a520dfbd7032be47a715561bc9a9626, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  active: 1
-  delay: 0
-  speedX: 0
-  speedY: 0
-  maxTranslateX: 0
-  maxTranslateY: 0
-  translateX: 0
-  translateY: 0
-  angularSpeed: 0
-  translate: {x: 0, y: 0, z: 0}
-  isLooping: 1
 --- !u!1001 &2117588745
 Prefab:
   m_ObjectHideFlags: 0
