@@ -28,7 +28,7 @@ public class ColliderScript : MonoBehaviour {
     public GameObject[] trigger;
     public void ColliderEffect()
 	{
-		ControllerSeb seb = GameObject.Find("Seb").GetComponent<ControllerSeb>();
+		PlayerController seb = GameObject.Find("Seb").GetComponent<PlayerController>();
 		
 		switch (colliderType)
 		{
@@ -65,7 +65,7 @@ public class ColliderScript : MonoBehaviour {
     
     public void IsLava()
     {
-        ControllerSeb seb = GameObject.Find("Seb").GetComponent<ControllerSeb>();
+        PlayerController seb = GameObject.Find("Seb").GetComponent<PlayerController>();
         if(colliderType == ColliderType.LAVA)
         {
             seb.Dead();
@@ -77,7 +77,7 @@ public class ColliderScript : MonoBehaviour {
         if (isCheckPoint)
         {
             isCheckPoint = false;
-            ControllerSeb seb = GameObject.Find("Seb").GetComponent<ControllerSeb>();
+            PlayerController seb = GameObject.Find("Seb").GetComponent<PlayerController>();
             seb.CheckPointPosition();
             
         }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ControllerSeb : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     // Use this for initialization
     public float speed = 0.1f;
@@ -282,7 +282,7 @@ public class ControllerSeb : MonoBehaviour
                 velocity.y = jumpVelocity;
             }
             //wall jump left
-            else if (isJumping && collidedLeft && buttonJumpDown && !isWallJumpingLeft)
+            else if (isJumping && collidedLeft && buttonJumpDown && !isWallJumpingLeft && !isCollidingDown)
             {
                 Debug.Log("wall jump left !");
                 velocity.y = jumpVelocity;
@@ -292,7 +292,7 @@ public class ControllerSeb : MonoBehaviour
                 return;
             }
             //wall jump right
-            else if (isJumping && collidedRight && buttonJumpDown && !isWallJumpingRight)
+            else if (isJumping && collidedRight && buttonJumpDown && !isWallJumpingRight && !isCollidingDown)
             {
                 Debug.Log("wall jump right!");
                 velocity.y = jumpVelocity;

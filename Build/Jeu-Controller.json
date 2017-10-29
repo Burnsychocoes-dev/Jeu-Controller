@@ -1,0 +1,11 @@
+{
+"TOTAL_MEMORY": 268435456,
+"dataUrl": "Jeu-Controller.data.unityweb",
+"asmCodeUrl": "Jeu-Controller.asm.code.unityweb",
+"asmMemoryUrl": "Jeu-Controller.asm.memory.unityweb",
+"asmFrameworkUrl": "Jeu-Controller.asm.framework.unityweb",
+"graphicsAPI": ["WebGL 2.0", "WebGL 1.0"],
+"webglContextAttributes": {"preserveDrawingBuffer": false},
+"splashScreenStyle": "Dark",
+"backgroundColor": "#231F20"
+}
