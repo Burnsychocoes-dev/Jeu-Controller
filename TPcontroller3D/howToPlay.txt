@@ -1,0 +1,6 @@
+Your goal is to reach the last platform
+You can play with your keyboard using the directional keys and spacebar to jump, or simply use an XBox Controller and press "A" to jump.
+You can perform wall jumps and double jumps.
+
+Be careful, there's a trap in the game.
+Good luck, have fun !
